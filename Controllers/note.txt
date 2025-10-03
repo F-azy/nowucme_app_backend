@@ -1,0 +1,69 @@
+import { pool } from "../conn.js";
+
+// ✅ Toggle Discover ON/OFF
+export const toggleDiscover = async (req, res) => {
+  try {
+    const { bluetooth_id, discover_status } = req.body;
+    const userId = req.user.id; // from JWT
+
+    if (!bluetooth_id) {
+      return res.status(400).json({ error: "Bluetooth ID is required" });
+    }
+
+    const result = await pool.query(
+      `UPDATE users
+       SET bluetooth_id = $1,
+           discover_status = $2,
+           last_seen = NOW(),
+           updated_at = NOW()
+       WHERE id = $3
+       RETURNING id, username, display_name, discover_status, bluetooth_id`,
+      [bluetooth_id, discover_status, userId]
+    );
+
+    res.json({
+      message: "Discover status updated",
+      user: result.rows[0],
+    });
+  } catch (err) {
+    console.error("❌ toggleDiscover error:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// ✅ Fetch Nearby Users (who also enabled discover)
+export const getNearbyUsers = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Get current user’s Bluetooth ID
+    const self = await pool.query(
+      `SELECT bluetooth_id FROM users WHERE id = $1`,
+      [userId]
+    );
+
+    if (!self.rows.length || !self.rows[0].bluetooth_id) {
+      return res.status(400).json({ error: "Your Bluetooth ID is not set" });
+    }
+
+    // 🔹 For now: return ALL users who are discoverable
+    // Later: filter based on proximity using RSSI/distance logic from Bluetooth scan
+    const nearbyUsers = await pool.query(
+      `SELECT id, username, display_name, bio, profile_image, instagram, twitter, linkedin
+       FROM users
+       WHERE discover_status = TRUE
+       AND id != $1
+       ORDER BY last_seen DESC
+       LIMIT 20`,
+      [userId]
+    );
+
+    res.json({
+      message: "Nearby users fetched",
+      users: nearbyUsers.rows,
+    });
+  } catch (err) {
+    console.error("❌ getNearbyUsers error:", err.message);
+    res.status(500).json({ error: "Server error" });
+  }
+};
