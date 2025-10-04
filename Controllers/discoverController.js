@@ -37,11 +37,13 @@ export const toggleDiscover = async (req, res) => {
   }
 };
 
-// Update user's location (called periodically when discover is on)
+// In discoverController.js - updateLocation function
 export const updateLocation = async (req, res) => {
   try {
     const userId = req.user.id;
     const { latitude, longitude } = req.body;
+
+    console.log(`📍 Location update from user ${userId}:`, { latitude, longitude });
 
     if (!latitude || !longitude) {
       return res.status(400).json({ error: "Location coordinates required" });
@@ -57,45 +59,50 @@ export const updateLocation = async (req, res) => {
     `;
     const { rows } = await pool.query(query, [latitude, longitude, userId]);
 
+    console.log(`✅ Location saved for user ${userId}`);
     res.json({ success: true, data: rows[0] });
   } catch (err) {
     console.error("Update location error:", err.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
 // Get nearby users by GPS location (Haversine formula)
 export const getNearbyUsersByLocation = async (req, res) => {
   try {
     const userId = req.user.id;
     const { latitude, longitude, radius_meters = 100 } = req.body;
 
+    console.log(`🔍 User ${userId} searching from:`, { latitude, longitude, radius_meters });
+
     if (!latitude || !longitude) {
       return res.status(400).json({ error: "Location coordinates required" });
     }
 
-    // Haversine formula to find users within radius
-    // This calculates distance in meters between two lat/lng points
+    // Use subquery to calculate distance first, then filter
     const query = `
-      SELECT 
-        id, display_name, username,
-        instagram, twitter, linkedin,
-        profile_image, bluetooth_id,
-        latitude, longitude,
-        (
-          6371000 * acos(
-            cos(radians($1)) * cos(radians(latitude)) * 
-            cos(radians(longitude) - radians($2)) + 
-            sin(radians($1)) * sin(radians(latitude))
-          )
-        ) AS distance_meters
-      FROM users
-      WHERE discover_status = true
-      AND id != $3
-      AND latitude IS NOT NULL
-      AND longitude IS NOT NULL
-      AND location_updated_at > NOW() - INTERVAL '5 minutes'
-      HAVING distance_meters <= $4
+      SELECT * FROM (
+        SELECT 
+          id, display_name, username,
+          instagram, twitter, linkedin,
+          profile_image, bluetooth_id,
+          latitude, longitude,
+          (
+            6371000 * acos(
+              LEAST(1.0, 
+                cos(radians($1)) * cos(radians(latitude)) * 
+                cos(radians(longitude) - radians($2)) + 
+                sin(radians($1)) * sin(radians(latitude))
+              )
+            )
+          ) AS distance_meters
+        FROM users
+        WHERE discover_status = true
+        AND id != $3
+        AND latitude IS NOT NULL
+        AND longitude IS NOT NULL
+        AND location_updated_at > NOW() - INTERVAL '5 minutes'
+      ) AS nearby_users
+      WHERE distance_meters <= $4
       ORDER BY distance_meters ASC
       LIMIT 50;
     `;
@@ -107,17 +114,24 @@ export const getNearbyUsersByLocation = async (req, res) => {
       radius_meters
     ]);
 
+    console.log(`✅ Found ${rows.length} users within ${radius_meters}m`);
+    if (rows.length > 0) {
+      rows.forEach(user => {
+        console.log(`   - ${user.display_name || user.username}: ${Math.round(user.distance_meters)}m`);
+      });
+    }
+
     res.json({ 
       success: true, 
       users: rows,
       count: rows.length 
     });
   } catch (err) {
-    console.error("Get nearby users error:", err.message);
-    res.status(500).json({ error: "Internal server error" });
+    console.error("❌ Get nearby users error:", err.message);
+    console.error("Stack:", err.stack);
+    res.status(500).json({ error: "Internal server error", details: err.message });
   }
 };
-
 // Verify proximity with bluetooth_ids (optional BLE verification)
 export const verifyBluetoothProximity = async (req, res) => {
   try {
