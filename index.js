@@ -6,6 +6,7 @@ import authRoutes from "./Routes/authRoutes.js";
 import profileRoutes from "./Routes/profileRoutes.js";
 import { createUsersTable } from "./Models/userModel.js";
 import discoverRoutes from "./Routes/discoverRoutes.js"; 
+import { initializeDatabase } from './Models/userModel.js';
 
 dotenv.config();
 
@@ -21,6 +22,15 @@ app.use(cors({
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/discover", discoverRoutes);
+
+initializeDatabase()
+  .then(() => {
+    console.log("✅ Database ready");
+  })
+  .catch(err => {
+    console.error("❌ Failed to initialize database:", err);
+    process.exit(1); // Exit if database fails
+  });
 
 
 // Health check
