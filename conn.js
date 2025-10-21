@@ -17,7 +17,7 @@ export const pool = new Pool({
 // Test the connection
 pool.query("SELECT NOW()", (err) => {
   if (err) {
-    console.error("❌ Database connection error:", err.stack);
+    console.error("❌ Database connection error: ", err.stack);
   } else {
     console.log("✅ Database connected successfully");
   }
