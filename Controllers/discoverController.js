@@ -167,7 +167,7 @@ export const verifyBluetoothProximity = async (req, res) => {
   }
 };
 
-// Heartbeat - keeps user active in discovery
+// Heartbeat ( keeps user active in discovery)
 export const updateDiscoverHeartbeat = async (req, res) => {
   try {
     const userId = req.user.id;
