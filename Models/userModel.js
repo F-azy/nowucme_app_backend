@@ -44,6 +44,10 @@ export async function migrateUsersTable() {
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS latitude DECIMAL(10, 8);`,
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS longitude DECIMAL(11, 8);`,
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS location_updated_at TIMESTAMP;`,
+      `ALTER TABLE users ADD COLUMN IF NOT EXISTS facebook VARCHAR(255);`,
+      `ALTER TABLE users ALTER COLUMN instagram TYPE VARCHAR(255);`,
+      `ALTER TABLE users ALTER COLUMN twitter TYPE VARCHAR(255);`,
+      `ALTER TABLE users ALTER COLUMN linkedin TYPE VARCHAR(255);`,
     ];
 
     for (const migration of migrations) {
@@ -75,18 +79,29 @@ export async function createUsersIndexes() {
   }
 }
 
-// Update profile
+// Get user profile
+export async function getUserProfile(userId) {
+  const result = await pool.query(
+    `SELECT id, email, username, display_name, profile_image, 
+            instagram, twitter, linkedin, facebook
+     FROM users WHERE id = $1`,
+    [userId]
+  );
+  return result.rows[0];
+}
+
+// Update profile (removed bio, added facebook)
 export async function updateProfile(userId, profileData) {
-  const { display_name, bio, instagram, twitter, linkedin } = profileData;
+  const { display_name, instagram, twitter, linkedin, facebook } = profileData;
 
   const query = `
     UPDATE users 
-    SET display_name = $1, bio = $2, instagram = $3, twitter = $4, linkedin = $5, updated_at = CURRENT_TIMESTAMP
+    SET display_name = $1, instagram = $2, twitter = $3, linkedin = $4, facebook = $5, updated_at = CURRENT_TIMESTAMP
     WHERE id = $6
-    RETURNING id, email, username, display_name, bio, instagram, twitter, linkedin;
+    RETURNING id, email, username, display_name, instagram, twitter, linkedin, facebook;
   `;
 
-  const values = [display_name, bio, instagram, twitter, linkedin, userId];
+  const values = [display_name, instagram, twitter, linkedin, facebook, userId];
   const result = await pool.query(query, values);
   return result.rows[0];
 }
