@@ -37,7 +37,7 @@ export const toggleDiscover = async (req, res) => {
   }
 };
 
-// In discoverController.js - updateLocation function
+// Update location
 export const updateLocation = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -66,6 +66,7 @@ export const updateLocation = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 // Get nearby users by GPS location (Haversine formula)
 export const getNearbyUsersByLocation = async (req, res) => {
   try {
@@ -83,7 +84,7 @@ export const getNearbyUsersByLocation = async (req, res) => {
       SELECT * FROM (
         SELECT 
           id, display_name, username,
-          instagram, twitter, linkedin,
+          instagram, twitter, linkedin, facebook,
           profile_image, bluetooth_id,
           latitude, longitude,
           (
@@ -132,6 +133,7 @@ export const getNearbyUsersByLocation = async (req, res) => {
     res.status(500).json({ error: "Internal server error", details: err.message });
   }
 };
+
 // Verify proximity with bluetooth_ids (optional BLE verification)
 export const verifyBluetoothProximity = async (req, res) => {
   try {
@@ -144,8 +146,8 @@ export const verifyBluetoothProximity = async (req, res) => {
 
     // Return users that match both GPS proximity AND BLE detection
     const query = `
-      SELECT id, display_name, username, name,
-             instagram, twitter, linkedin,
+      SELECT id, display_name, username,
+             instagram, twitter, linkedin, facebook,
              profile_image, bluetooth_id
       FROM users
       WHERE bluetooth_id = ANY($1)
