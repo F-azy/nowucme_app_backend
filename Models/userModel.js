@@ -45,6 +45,8 @@ export async function migrateUsersTable() {
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS longitude DECIMAL(11, 8);`,
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS location_updated_at TIMESTAMP;`,
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS facebook VARCHAR(255);`,
+      `ALTER TABLE users ADD COLUMN IF NOT EXISTS notifications_enabled BOOLEAN DEFAULT true;`,
+      `ALTER TABLE users ADD COLUMN IF NOT EXISTS location_accuracy VARCHAR(20) DEFAULT 'balanced';`,
       `ALTER TABLE users ALTER COLUMN instagram TYPE VARCHAR(255);`,
       `ALTER TABLE users ALTER COLUMN twitter TYPE VARCHAR(255);`,
       `ALTER TABLE users ALTER COLUMN linkedin TYPE VARCHAR(255);`,
