@@ -8,7 +8,7 @@ import { createUsersTable } from "./Models/userModel.js";
 import discoverRoutes from "./Routes/discoverRoutes.js"; 
 import { initializeDatabase } from './Models/userModel.js';
 
-import settingsRoutes from './Routes/settingsRoutes.js';
+
 dotenv.config();
 
 const app = express();
@@ -23,7 +23,7 @@ app.use(cors({
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/discover", discoverRoutes);
-app.use('/api/settings', settingsRoutes);
+
 initializeDatabase()
   .then(() => {
     console.log("✅ Database ready");
