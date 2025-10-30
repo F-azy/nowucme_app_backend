@@ -6,7 +6,7 @@ export async function findUserByEmail(email) {
   return result.rows[0];
 }
 
-// Create users table with all required columns
+// Add to createUsersTable
 export async function createUsersTable() {
   const query = `
     CREATE TABLE IF NOT EXISTS users (
@@ -27,6 +27,8 @@ export async function createUsersTable() {
       longitude DECIMAL(11, 8),
       location_updated_at TIMESTAMP,
       is_verified BOOLEAN DEFAULT false,
+      verification_otp VARCHAR(6),
+      otp_expires_at TIMESTAMP,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
@@ -34,7 +36,6 @@ export async function createUsersTable() {
   await pool.query(query);
   console.log("✅ Users table ready");
 }
-
 // Migration function to add missing columns to existing table
 export async function migrateUsersTable() {
   try {
@@ -46,6 +47,8 @@ export async function migrateUsersTable() {
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS location_updated_at TIMESTAMP;`,
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS facebook VARCHAR(255);`,
       `ALTER TABLE users ALTER COLUMN instagram TYPE VARCHAR(255);`,
+       `ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_otp VARCHAR(6);`,
+      `ALTER TABLE users ADD COLUMN IF NOT EXISTS otp_expires_at TIMESTAMP;`,
       `ALTER TABLE users ALTER COLUMN twitter TYPE VARCHAR(255);`,
       `ALTER TABLE users ALTER COLUMN linkedin TYPE VARCHAR(255);`,
     ];
