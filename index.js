@@ -7,6 +7,7 @@ import profileRoutes from "./Routes/profileRoutes.js";
 import { createUsersTable } from "./Models/userModel.js";
 import discoverRoutes from "./Routes/discoverRoutes.js"; 
 import { initializeDatabase } from './Models/userModel.js';
+import { cleanupUnverifiedUsers } from './Controllers/authController.js';
 
 
 dotenv.config();
@@ -23,6 +24,8 @@ app.use(cors({
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/discover", discoverRoutes);
+setInterval(cleanupUnverifiedUsers, 24 * 60 * 60 * 1000);
+cleanupUnverifiedUsers();
 
 initializeDatabase()
   .then(() => {

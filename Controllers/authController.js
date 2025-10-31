@@ -26,13 +26,29 @@ export const signup = async (req, res) => {
   }
 
   try {
+    // Check if user exists
     const existingUser = await pool.query(
       "SELECT * FROM users WHERE email = $1 OR username = $2",
       [email, username]
     );
 
     if (existingUser.rows.length > 0) {
-      return res.status(400).json({ error: "Email or Username already exists" });
+      const user = existingUser.rows[0];
+      
+      // If user exists but is NOT verified, allow re-registration
+      if (!user.is_verified) {
+        // Delete the old unverified account
+        await pool.query("DELETE FROM users WHERE id = $1", [user.id]);
+        console.log(`🗑️ Deleted unverified account for ${email}`);
+      } else {
+        // If user is verified, don't allow re-registration
+        if (user.email === email) {
+          return res.status(400).json({ error: "Email already exists" });
+        }
+        if (user.username === username) {
+          return res.status(400).json({ error: "Username already exists" });
+        }
+      }
     }
 
     const otp = generateOTP();
@@ -40,7 +56,7 @@ export const signup = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    // Create unverified user
+    // Create new unverified user
     const result = await pool.query(
       `INSERT INTO users (email, username, password_hash, display_name, is_verified, verification_otp, otp_expires_at)
        VALUES ($1, $2, $3, $4, false, $5, $6) RETURNING id, email, username`,
@@ -51,6 +67,8 @@ export const signup = async (req, res) => {
     const emailSent = await sendVerificationEmail(email, otp, username);
     
     if (!emailSent) {
+      // If email fails, delete the user
+      await pool.query("DELETE FROM users WHERE id = $1", [result.rows[0].id]);
       return res.status(500).json({ error: "Failed to send verification email" });
     }
 
@@ -64,7 +82,6 @@ export const signup = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 };
-
 // Verify OTP (Step 2: Verify and complete signup)
 export const verifyOTP = async (req, res) => {
   const { userId, otp } = req.body;
@@ -338,3 +355,229 @@ export const changeUsername = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+// controllers/authController.js
+
+// Clean up expired unverified accounts
+export const cleanupUnverifiedUsers = async () => {
+  try {
+    const result = await pool.query(
+      `DELETE FROM users 
+       WHERE is_verified = false 
+       AND created_at < NOW() - INTERVAL '24 hours'
+       RETURNING email`
+    );
+    
+    if (result.rows.length > 0) {
+      console.log(`🧹 Cleaned up ${result.rows.length} unverified accounts`);
+    }
+  } catch (error) {
+    console.error("Cleanup error:", error);
+  }
+};
+//-------------------
+// controllers/authController.js
+// controllers/authController.js
+
+// Make sure this function exists and is exported
+export const requestEmailChangeOTP = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { newEmail } = req.body;
+
+    console.log(`📧 Email change OTP request from user ${userId} to ${newEmail}`);
+
+    if (!newEmail) {
+      return res.status(400).json({ error: "New email required" });
+    }
+
+    if (!/\S+@\S+\.\S+/.test(newEmail)) {
+      return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    // Check if email already exists
+    const existingUser = await pool.query(
+      'SELECT id FROM users WHERE email = $1 AND id != $2',
+      [newEmail, userId]
+    );
+
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({ error: "Email already in use" });
+    }
+
+    // Get current user
+    const userQuery = await pool.query('SELECT username FROM users WHERE id = $1', [userId]);
+    
+    if (userQuery.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const username = userQuery.rows[0].username;
+
+    // Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+    // Store OTP temporarily
+    await pool.query(
+      'UPDATE users SET verification_otp = $1, otp_expires_at = $2 WHERE id = $3',
+      [otp, otpExpires, userId]
+    );
+
+    // Import your email service
+    const { sendVerificationEmail } = await import('../services/emailService.js');
+    
+    // Send OTP to NEW email
+    const emailSent = await sendVerificationEmail(newEmail, otp, username);
+    
+    if (!emailSent) {
+      return res.status(500).json({ error: "Failed to send verification email" });
+    }
+
+    console.log(`✅ OTP sent to ${newEmail} for user ${userId}`);
+    res.json({ 
+      success: true, 
+      message: "OTP sent to new email address" 
+    });
+  } catch (error) {
+    console.error("❌ Request email change OTP error:", error.message);
+    console.error("Stack:", error.stack);
+    res.status(500).json({ error: "Internal server error", details: error.message });
+  }
+};
+
+// Verify OTP and change email
+export const verifyEmailChangeOTP = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { newEmail, otp } = req.body;
+
+    if (!newEmail || !otp) {
+      return res.status(400).json({ error: "Email and OTP required" });
+    }
+
+    const userQuery = await pool.query(
+      'SELECT verification_otp, otp_expires_at FROM users WHERE id = $1',
+      [userId]
+    );
+
+    if (userQuery.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const user = userQuery.rows[0];
+
+    if (new Date() > new Date(user.otp_expires_at)) {
+      return res.status(400).json({ error: "OTP expired" });
+    }
+
+    if (user.verification_otp !== otp) {
+      return res.status(400).json({ error: "Invalid OTP" });
+    }
+
+    // Update email and clear OTP
+    await pool.query(
+      'UPDATE users SET email = $1, verification_otp = NULL, otp_expires_at = NULL, updated_at = NOW() WHERE id = $2',
+      [newEmail, userId]
+    );
+
+    console.log(`✅ Email changed for user ${userId}`);
+    res.json({ success: true, message: "Email changed successfully" });
+  } catch (error) {
+    console.error("Verify email change OTP error:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Request OTP for forgot password
+export const requestForgotPasswordOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: "Email required" });
+    }
+
+    const userQuery = await pool.query('SELECT id, username FROM users WHERE email = $1', [email]);
+
+    if (userQuery.rows.length === 0) {
+      // Don't reveal if email exists or not (security)
+      return res.json({ success: true, message: "If email exists, OTP has been sent" });
+    }
+
+    const user = userQuery.rows[0];
+
+    // Generate OTP
+    const otp = generateOTP();
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+
+    // Store OTP
+    await pool.query(
+      'UPDATE users SET verification_otp = $1, otp_expires_at = $2 WHERE id = $3',
+      [otp, otpExpires, user.id]
+    );
+
+    // Send OTP email
+    await sendVerificationEmail(email, otp, user.username);
+
+    res.json({ 
+      success: true, 
+      message: "If email exists, OTP has been sent",
+      userId: user.id // Send this to frontend (but don't expose in message)
+    });
+  } catch (error) {
+    console.error("Request forgot password OTP error:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Verify OTP and reset password
+export const resetPasswordWithOTP = async (req, res) => {
+  try {
+    const { userId, otp, newPassword } = req.body;
+
+    if (!userId || !otp || !newPassword) {
+      return res.status(400).json({ error: "All fields required" });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: "Password must be at least 6 characters" });
+    }
+
+    const userQuery = await pool.query(
+      'SELECT verification_otp, otp_expires_at FROM users WHERE id = $1',
+      [userId]
+    );
+
+    if (userQuery.rows.length === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const user = userQuery.rows[0];
+
+    if (new Date() > new Date(user.otp_expires_at)) {
+      return res.status(400).json({ error: "OTP expired" });
+    }
+
+    if (user.verification_otp !== otp) {
+      return res.status(400).json({ error: "Invalid OTP" });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(newPassword, salt);
+
+    // Update password and clear OTP
+    await pool.query(
+      'UPDATE users SET password_hash = $1, verification_otp = NULL, otp_expires_at = NULL, updated_at = NOW() WHERE id = $2',
+      [passwordHash, userId]
+    );
+
+    console.log(`✅ Password reset for user ${userId}`);
+    res.json({ success: true, message: "Password reset successfully" });
+  } catch (error) {
+    console.error("Reset password OTP error:", error.message);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
