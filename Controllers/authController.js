@@ -424,7 +424,7 @@ export const requestEmailChangeOTP = async (req, res) => {
       [otp, otpExpires, userId]
     );
 
-    // Import your email service
+    // Import your email-service
     const { sendVerificationEmail } = await import('../services/emailService.js');
     
     // Send OTP to NEW email
