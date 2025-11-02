@@ -1,12 +1,18 @@
 // services/emailService.js
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER, // your Gmail
+    pass: process.env.EMAIL_PASSWORD, // App Password 
+  },
+});
 
 export const sendVerificationEmail = async (email, otp, username) => {
   try {
-    const { data, error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM || 'onboarding@resend.dev',
+    await transporter.sendMail({
+      from: `"nowUCme" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: 'Verify your nowUCme account',
       html: `
@@ -14,45 +20,11 @@ export const sendVerificationEmail = async (email, otp, username) => {
         <html>
           <head>
             <style>
-              body { 
-                font-family: Arial, sans-serif; 
-                background-color: #f0fdf4; 
-                padding: 20px; 
-                margin: 0;
-              }
-              .container { 
-                max-width: 600px; 
-                margin: 0 auto; 
-                background: white; 
-                padding: 40px; 
-                border-radius: 10px; 
-                border: 2px solid #000; 
-              }
-              .logo { 
-                font-size: 32px; 
-                font-weight: bold; 
-                color: #000; 
-                margin-bottom: 20px; 
-              }
-              .otp { 
-                font-size: 36px; 
-                font-weight: bold; 
-                color: #000; 
-                background: #84fe71; 
-                padding: 15px 30px; 
-                border-radius: 10px; 
-                display: inline-block; 
-                letter-spacing: 8px; 
-                border: 2px solid #000; 
-                margin: 20px 0;
-              }
-              .footer { 
-                margin-top: 30px; 
-                color: #666; 
-                font-size: 14px; 
-                border-top: 1px solid #ddd;
-                padding-top: 20px;
-              }
+              body { font-family: Arial, sans-serif; background-color: #f0fdf4; padding: 20px; }
+              .container { max-width: 600px; margin: 0 auto; background: white; padding: 40px; border-radius: 10px; border: 2px solid #000; }
+              .logo { font-size: 32px; font-weight: bold; color: #000; margin-bottom: 20px; }
+              .otp { font-size: 36px; font-weight: bold; color: #000; background: #84fe71; padding: 15px 30px; border-radius: 10px; display: inline-block; letter-spacing: 8px; border: 2px solid #000; }
+              .footer { margin-top: 30px; color: #666; font-size: 14px; }
             </style>
           </head>
           <body>
@@ -61,7 +33,7 @@ export const sendVerificationEmail = async (email, otp, username) => {
               <h2>Welcome, ${username}! 👋</h2>
               <p>Thanks for signing up! Please verify your email address to get started.</p>
               <p>Your verification code is:</p>
-              <div style="text-align: center;">
+              <div style="text-align: center; margin: 30px 0;">
                 <div class="otp">${otp}</div>
               </div>
               <p>This code will expire in 10 minutes.</p>
@@ -74,13 +46,7 @@ export const sendVerificationEmail = async (email, otp, username) => {
         </html>
       `,
     });
-
-    if (error) {
-      console.error('❌ Resend API error:', error);
-      return false;
-    }
-
-    console.log(`✅ Verification email sent to ${email}`, data);
+    console.log(`✅ Verification email sent to ${email}`);
     return true;
   } catch (error) {
     console.error('❌ Email send error:', error);
