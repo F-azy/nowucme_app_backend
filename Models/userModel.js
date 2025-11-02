@@ -105,7 +105,7 @@ export async function updateProfile(userId, profileData) {
   return result.rows[0];
 }
 
-export async function initializeDatabase() {
+export async function initializeDatabaseModels() {
   await createUsersTable();
   await migrateUsersTable(); // Add missing columns if table already exists
   await createUsersIndexes();
