@@ -1,4 +1,3 @@
-// controllers/discoverController.js
 import { pool } from "../conn.js";
 
 // Toggle discover mode ON/OFF and save Bluetooth ID
@@ -23,7 +22,13 @@ export const toggleDiscover = async (req, res) => {
       WHERE id = $5
       RETURNING id, username, display_name, bluetooth_id, discover_status, latitude, longitude;
     `;
-    const values = [bluetooth_id, discover_status, latitude || null, longitude || null, userId];
+    const values = [
+      bluetooth_id,
+      discover_status,
+      latitude || null,
+      longitude || null,
+      userId,
+    ];
     const { rows } = await pool.query(query, values);
 
     if (rows.length === 0) {
@@ -43,7 +48,10 @@ export const updateLocation = async (req, res) => {
     const userId = req.user.id;
     const { latitude, longitude } = req.body;
 
-    console.log(`📍 Location update from user ${userId}:`, { latitude, longitude });
+    console.log(`📍 Location update from user ${userId}:`, {
+      latitude,
+      longitude,
+    });
 
     if (!latitude || !longitude) {
       return res.status(400).json({ error: "Location coordinates required" });
@@ -73,7 +81,11 @@ export const getNearbyUsersByLocation = async (req, res) => {
     const userId = req.user.id;
     const { latitude, longitude, radius_meters = 100 } = req.body;
 
-    console.log(`🔍 User ${userId} searching from:`, { latitude, longitude, radius_meters });
+    console.log(`🔍 User ${userId} searching from:`, {
+      latitude,
+      longitude,
+      radius_meters,
+    });
 
     if (!latitude || !longitude) {
       return res.status(400).json({ error: "Location coordinates required" });
@@ -107,30 +119,36 @@ export const getNearbyUsersByLocation = async (req, res) => {
       ORDER BY distance_meters ASC
       LIMIT 50;
     `;
-    
+
     const { rows } = await pool.query(query, [
-      latitude, 
-      longitude, 
-      userId, 
-      radius_meters
+      latitude,
+      longitude,
+      userId,
+      radius_meters,
     ]);
 
     console.log(`✅ Found ${rows.length} users within ${radius_meters}m`);
     if (rows.length > 0) {
-      rows.forEach(user => {
-        console.log(`   - ${user.display_name || user.username}: ${Math.round(user.distance_meters)}m`);
+      rows.forEach((user) => {
+        console.log(
+          `   - ${user.display_name || user.username}: ${Math.round(
+            user.distance_meters
+          )}m`
+        );
       });
     }
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       users: rows,
-      count: rows.length 
+      count: rows.length,
     });
   } catch (err) {
     console.error("❌ Get nearby users error:", err.message);
     console.error("Stack:", err.stack);
-    res.status(500).json({ error: "Internal server error", details: err.message });
+    res
+      .status(500)
+      .json({ error: "Internal server error", details: err.message });
   }
 };
 
@@ -154,12 +172,12 @@ export const verifyBluetoothProximity = async (req, res) => {
       AND discover_status = true
       AND id != $2;
     `;
-    
+
     const { rows } = await pool.query(query, [bluetooth_ids, userId]);
 
-    res.json({ 
-      success: true, 
-      verified_users: rows 
+    res.json({
+      success: true,
+      verified_users: rows,
     });
   } catch (err) {
     console.error("Verify bluetooth proximity error:", err.message);
@@ -182,11 +200,11 @@ export const updateDiscoverHeartbeat = async (req, res) => {
       WHERE id = $3 AND discover_status = true
       RETURNING id, updated_at, location_updated_at;
     `;
-    
+
     const { rows } = await pool.query(query, [
-      latitude || null, 
-      longitude || null, 
-      userId
+      latitude || null,
+      longitude || null,
+      userId,
     ]);
 
     res.json({ success: true, data: rows[0] });

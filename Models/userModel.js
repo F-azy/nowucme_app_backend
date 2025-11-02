@@ -1,12 +1,12 @@
 import { pool } from "../conn.js";
 
-// Find user by email
 export async function findUserByEmail(email) {
-  const result = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+  const result = await pool.query("SELECT * FROM users WHERE email = $1", [
+    email,
+  ]);
   return result.rows[0];
 }
 
-// Add to createUsersTable
 export async function createUsersTable() {
   const query = `
     CREATE TABLE IF NOT EXISTS users (
@@ -36,7 +36,6 @@ export async function createUsersTable() {
   await pool.query(query);
   console.log("✅ Users table ready");
 }
-// Migration function to add missing columns to existing table
 export async function migrateUsersTable() {
   try {
     const migrations = [
@@ -47,7 +46,7 @@ export async function migrateUsersTable() {
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS location_updated_at TIMESTAMP;`,
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS facebook VARCHAR(255);`,
       `ALTER TABLE users ALTER COLUMN instagram TYPE VARCHAR(255);`,
-       `ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_otp VARCHAR(6);`,
+      `ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_otp VARCHAR(6);`,
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS otp_expires_at TIMESTAMP;`,
       `ALTER TABLE users ALTER COLUMN twitter TYPE VARCHAR(255);`,
       `ALTER TABLE users ALTER COLUMN linkedin TYPE VARCHAR(255);`,
@@ -56,14 +55,13 @@ export async function migrateUsersTable() {
     for (const migration of migrations) {
       await pool.query(migration);
     }
-    
+
     console.log("✅ Users table migrated successfully");
   } catch (error) {
     console.error("❌ Migration error:", error.message);
   }
 }
 
-// Create indexes for better performance
 export async function createUsersIndexes() {
   try {
     const indexes = [
@@ -82,7 +80,6 @@ export async function createUsersIndexes() {
   }
 }
 
-// Get user profile
 export async function getUserProfile(userId) {
   const result = await pool.query(
     `SELECT id, email, username, display_name, profile_image, 
@@ -93,7 +90,6 @@ export async function getUserProfile(userId) {
   return result.rows[0];
 }
 
-// Update profile (removed bio, added facebook)
 export async function updateProfile(userId, profileData) {
   const { display_name, instagram, twitter, linkedin, facebook } = profileData;
 
@@ -109,7 +105,6 @@ export async function updateProfile(userId, profileData) {
   return result.rows[0];
 }
 
-// Initialize database (call this on server startup)
 export async function initializeDatabase() {
   await createUsersTable();
   await migrateUsersTable(); // Add missing columns if table already exists

@@ -22,7 +22,9 @@ export const signup = async (req, res) => {
   }
 
   if (password.length < 6) {
-    return res.status(400).json({ error: "Password must be at least 6 characters" });
+    return res
+      .status(400)
+      .json({ error: "Password must be at least 6 characters" });
   }
 
   try {
@@ -34,7 +36,7 @@ export const signup = async (req, res) => {
 
     if (existingUser.rows.length > 0) {
       const user = existingUser.rows[0];
-      
+
       // If user exists but is NOT verified, allow re-registration
       if (!user.is_verified) {
         // Delete the old unverified account
@@ -65,17 +67,19 @@ export const signup = async (req, res) => {
 
     // Send verification email
     const emailSent = await sendVerificationEmail(email, otp, username);
-    
+
     if (!emailSent) {
       // If email fails, delete the user
       await pool.query("DELETE FROM users WHERE id = $1", [result.rows[0].id]);
-      return res.status(500).json({ error: "Failed to send verification email" });
+      return res
+        .status(500)
+        .json({ error: "Failed to send verification email" });
     }
 
-    res.status(201).json({ 
+    res.status(201).json({
       message: "OTP sent to your email",
       userId: result.rows[0].id,
-      email: result.rows[0].email
+      email: result.rows[0].email,
     });
   } catch (err) {
     console.error("❌ Signup error:", err.message);
@@ -91,10 +95,9 @@ export const verifyOTP = async (req, res) => {
   }
 
   try {
-    const result = await pool.query(
-      "SELECT * FROM users WHERE id = $1",
-      [userId]
-    );
+    const result = await pool.query("SELECT * FROM users WHERE id = $1", [
+      userId,
+    ]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "User not found" });
@@ -145,7 +148,9 @@ export const resendOTP = async (req, res) => {
   const { userId } = req.body;
 
   try {
-    const result = await pool.query("SELECT * FROM users WHERE id = $1", [userId]);
+    const result = await pool.query("SELECT * FROM users WHERE id = $1", [
+      userId,
+    ]);
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: "User not found" });
@@ -230,12 +235,14 @@ export const changePassword = async (req, res) => {
     }
 
     if (newPassword.length < 6) {
-      return res.status(400).json({ error: "Password must be at least 6 characters" });
+      return res
+        .status(400)
+        .json({ error: "Password must be at least 6 characters" });
     }
 
     // Get user's current password
     const userQuery = await pool.query(
-      'SELECT password_hash FROM users WHERE id = $1',
+      "SELECT password_hash FROM users WHERE id = $1",
       [userId]
     );
 
@@ -244,7 +251,10 @@ export const changePassword = async (req, res) => {
     }
 
     // Verify current password
-    const isValid = await bcrypt.compare(currentPassword, userQuery.rows[0].password_hash);
+    const isValid = await bcrypt.compare(
+      currentPassword,
+      userQuery.rows[0].password_hash
+    );
     if (!isValid) {
       return res.status(401).json({ error: "Current password is incorrect" });
     }
@@ -254,7 +264,7 @@ export const changePassword = async (req, res) => {
 
     // Update password
     await pool.query(
-      'UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2',
+      "UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2",
       [newHash, userId]
     );
 
@@ -278,7 +288,7 @@ export const changeEmail = async (req, res) => {
 
     // Check if email already exists
     const existingUser = await pool.query(
-      'SELECT id FROM users WHERE email = $1 AND id != $2',
+      "SELECT id FROM users WHERE email = $1 AND id != $2",
       [newEmail, userId]
     );
 
@@ -288,7 +298,7 @@ export const changeEmail = async (req, res) => {
 
     // Update email
     await pool.query(
-      'UPDATE users SET email = $1, updated_at = NOW() WHERE id = $2',
+      "UPDATE users SET email = $1, updated_at = NOW() WHERE id = $2",
       [newEmail, userId]
     );
 
@@ -306,7 +316,7 @@ export const deleteAccount = async (req, res) => {
     const userId = req.user.id;
 
     // Delete user (cascade will handle related data)
-    await pool.query('DELETE FROM users WHERE id = $1', [userId]);
+    await pool.query("DELETE FROM users WHERE id = $1", [userId]);
 
     console.log(`✅ Account deleted for user ${userId}`);
     res.json({ success: true, message: "Account deleted successfully" });
@@ -327,14 +337,15 @@ export const changeUsername = async (req, res) => {
 
     // Validate username format (alphanumeric, underscore, 3-20 chars)
     if (!/^[a-zA-Z0-9_]{3,20}$/.test(newUsername)) {
-      return res.status(400).json({ 
-        error: "Username must be 3-20 characters (letters, numbers, underscore only)" 
+      return res.status(400).json({
+        error:
+          "Username must be 3-20 characters (letters, numbers, underscore only)",
       });
     }
 
     // Check if username already exists
     const existingUser = await pool.query(
-      'SELECT id FROM users WHERE username = $1 AND id != $2',
+      "SELECT id FROM users WHERE username = $1 AND id != $2",
       [newUsername, userId]
     );
 
@@ -344,12 +355,16 @@ export const changeUsername = async (req, res) => {
 
     // Update username
     await pool.query(
-      'UPDATE users SET username = $1, updated_at = NOW() WHERE id = $2',
+      "UPDATE users SET username = $1, updated_at = NOW() WHERE id = $2",
       [newUsername, userId]
     );
 
     console.log(`✅ Username changed for user ${userId} to ${newUsername}`);
-    res.json({ success: true, message: "Username changed successfully", username: newUsername });
+    res.json({
+      success: true,
+      message: "Username changed successfully",
+      username: newUsername,
+    });
   } catch (error) {
     console.error("Change username error:", error.message);
     res.status(500).json({ error: "Internal server error" });
@@ -367,7 +382,7 @@ export const cleanupUnverifiedUsers = async () => {
        AND created_at < NOW() - INTERVAL '24 hours'
        RETURNING email`
     );
-    
+
     if (result.rows.length > 0) {
       console.log(`🧹 Cleaned up ${result.rows.length} unverified accounts`);
     }
@@ -385,7 +400,9 @@ export const requestEmailChangeOTP = async (req, res) => {
     const userId = req.user.id;
     const { newEmail } = req.body;
 
-    console.log(`📧 Email change OTP request from user ${userId} to ${newEmail}`);
+    console.log(
+      `📧 Email change OTP request from user ${userId} to ${newEmail}`
+    );
 
     if (!newEmail) {
       return res.status(400).json({ error: "New email required" });
@@ -397,7 +414,7 @@ export const requestEmailChangeOTP = async (req, res) => {
 
     // Check if email already exists
     const existingUser = await pool.query(
-      'SELECT id FROM users WHERE email = $1 AND id != $2',
+      "SELECT id FROM users WHERE email = $1 AND id != $2",
       [newEmail, userId]
     );
 
@@ -406,8 +423,11 @@ export const requestEmailChangeOTP = async (req, res) => {
     }
 
     // Get current user
-    const userQuery = await pool.query('SELECT username FROM users WHERE id = $1', [userId]);
-    
+    const userQuery = await pool.query(
+      "SELECT username FROM users WHERE id = $1",
+      [userId]
+    );
+
     if (userQuery.rows.length === 0) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -420,29 +440,35 @@ export const requestEmailChangeOTP = async (req, res) => {
 
     // Store OTP temporarily
     await pool.query(
-      'UPDATE users SET verification_otp = $1, otp_expires_at = $2 WHERE id = $3',
+      "UPDATE users SET verification_otp = $1, otp_expires_at = $2 WHERE id = $3",
       [otp, otpExpires, userId]
     );
 
     // Import your email-service
-    const { sendVerificationEmail } = await import('../services/emailService.js');
-    
+    const { sendVerificationEmail } = await import(
+      "../services/emailService.js"
+    );
+
     // Send OTP to NEW email
     const emailSent = await sendVerificationEmail(newEmail, otp, username);
-    
+
     if (!emailSent) {
-      return res.status(500).json({ error: "Failed to send verification email" });
+      return res
+        .status(500)
+        .json({ error: "Failed to send verification email" });
     }
 
     console.log(`✅ OTP sent to ${newEmail} for user ${userId}`);
-    res.json({ 
-      success: true, 
-      message: "OTP sent to new email address" 
+    res.json({
+      success: true,
+      message: "OTP sent to new email address",
     });
   } catch (error) {
     console.error("❌ Request email change OTP error:", error.message);
     console.error("Stack:", error.stack);
-    res.status(500).json({ error: "Internal server error", details: error.message });
+    res
+      .status(500)
+      .json({ error: "Internal server error", details: error.message });
   }
 };
 
@@ -457,7 +483,7 @@ export const verifyEmailChangeOTP = async (req, res) => {
     }
 
     const userQuery = await pool.query(
-      'SELECT verification_otp, otp_expires_at FROM users WHERE id = $1',
+      "SELECT verification_otp, otp_expires_at FROM users WHERE id = $1",
       [userId]
     );
 
@@ -477,7 +503,7 @@ export const verifyEmailChangeOTP = async (req, res) => {
 
     // Update email and clear OTP
     await pool.query(
-      'UPDATE users SET email = $1, verification_otp = NULL, otp_expires_at = NULL, updated_at = NOW() WHERE id = $2',
+      "UPDATE users SET email = $1, verification_otp = NULL, otp_expires_at = NULL, updated_at = NOW() WHERE id = $2",
       [newEmail, userId]
     );
 
@@ -498,11 +524,17 @@ export const requestForgotPasswordOTP = async (req, res) => {
       return res.status(400).json({ error: "Email required" });
     }
 
-    const userQuery = await pool.query('SELECT id, username FROM users WHERE email = $1', [email]);
+    const userQuery = await pool.query(
+      "SELECT id, username FROM users WHERE email = $1",
+      [email]
+    );
 
     if (userQuery.rows.length === 0) {
       // Don't reveal if email exists or not (security)
-      return res.json({ success: true, message: "If email exists, OTP has been sent" });
+      return res.json({
+        success: true,
+        message: "If email exists, OTP has been sent",
+      });
     }
 
     const user = userQuery.rows[0];
@@ -513,17 +545,17 @@ export const requestForgotPasswordOTP = async (req, res) => {
 
     // Store OTP
     await pool.query(
-      'UPDATE users SET verification_otp = $1, otp_expires_at = $2 WHERE id = $3',
+      "UPDATE users SET verification_otp = $1, otp_expires_at = $2 WHERE id = $3",
       [otp, otpExpires, user.id]
     );
 
     // Send OTP email
     await sendVerificationEmail(email, otp, user.username);
 
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       message: "If email exists, OTP has been sent",
-      userId: user.id // Send this to frontend (but don't expose in message)
+      userId: user.id, // Send this to frontend (but don't expose in message)
     });
   } catch (error) {
     console.error("Request forgot password OTP error:", error.message);
@@ -541,11 +573,13 @@ export const resetPasswordWithOTP = async (req, res) => {
     }
 
     if (newPassword.length < 6) {
-      return res.status(400).json({ error: "Password must be at least 6 characters" });
+      return res
+        .status(400)
+        .json({ error: "Password must be at least 6 characters" });
     }
 
     const userQuery = await pool.query(
-      'SELECT verification_otp, otp_expires_at FROM users WHERE id = $1',
+      "SELECT verification_otp, otp_expires_at FROM users WHERE id = $1",
       [userId]
     );
 
@@ -569,7 +603,7 @@ export const resetPasswordWithOTP = async (req, res) => {
 
     // Update password and clear OTP
     await pool.query(
-      'UPDATE users SET password_hash = $1, verification_otp = NULL, otp_expires_at = NULL, updated_at = NOW() WHERE id = $2',
+      "UPDATE users SET password_hash = $1, verification_otp = NULL, otp_expires_at = NULL, updated_at = NOW() WHERE id = $2",
       [passwordHash, userId]
     );
 
@@ -580,4 +614,3 @@ export const resetPasswordWithOTP = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-

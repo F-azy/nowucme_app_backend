@@ -42,7 +42,7 @@ export const updateUserProfile = async (req, res) => {
 export const uploadProfileImage = async (req, res) => {
   try {
     const userId = req.user.id;
-    
+
     if (!req.file) {
       return res.status(400).json({ error: "No image uploaded" });
     }
@@ -56,13 +56,13 @@ export const uploadProfileImage = async (req, res) => {
       WHERE id = $2
       RETURNING profile_image;
     `;
-    
+
     const { rows } = await pool.query(query, [imageUrl, userId]);
 
     console.log(`✅ Profile image uploaded for user ${userId}`);
-    res.json({ 
-      success: true, 
-      profile_image: rows[0].profile_image 
+    res.json({
+      success: true,
+      profile_image: rows[0].profile_image,
     });
   } catch (err) {
     console.error("Upload image error:", err.message);
@@ -77,10 +77,10 @@ export const deleteProfileImage = async (req, res) => {
 
     // Get current image URL
     const userQuery = await pool.query(
-      'SELECT profile_image FROM users WHERE id = $1',
+      "SELECT profile_image FROM users WHERE id = $1",
       [userId]
     );
-    
+
     const currentImage = userQuery.rows[0]?.profile_image;
 
     if (!currentImage) {
@@ -91,7 +91,11 @@ export const deleteProfileImage = async (req, res) => {
     try {
       // Extract public_id from Cloudinary URL
       // Example URL: https://res.cloudinary.com/cloud/image/upload/v123/nowucme/profiles/abc123.jpg
-      const publicId = currentImage.split('/').slice(-2).join('/').split('.')[0];
+      const publicId = currentImage
+        .split("/")
+        .slice(-2)
+        .join("/")
+        .split(".")[0];
       await cloudinary.uploader.destroy(publicId);
       console.log(`✅ Deleted image from Cloudinary: ${publicId}`);
     } catch (cloudinaryError) {
@@ -100,10 +104,9 @@ export const deleteProfileImage = async (req, res) => {
     }
 
     // Remove from database
-    await pool.query(
-      'UPDATE users SET profile_image = NULL WHERE id = $1',
-      [userId]
-    );
+    await pool.query("UPDATE users SET profile_image = NULL WHERE id = $1", [
+      userId,
+    ]);
 
     console.log(`✅ Profile image deleted for user ${userId}`);
     res.json({ success: true, message: "Profile image deleted" });
