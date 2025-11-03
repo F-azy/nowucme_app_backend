@@ -4,21 +4,21 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "start":"node index.js",
-    "start:prod":"pm2 start index.js --name nowucme-api"
+    "start": "node index.js",
+    "start:prod": "pm2 start index.js --name nowucme-api"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "dotenv": "^17.2.3",
     "nodemon": "^3.1.10"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "cloudinary": "^1.41.3",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^2.0.2",
