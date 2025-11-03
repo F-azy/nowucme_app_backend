@@ -14,12 +14,11 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "http://localhost:8081"],
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: "*",
+  credentials: true,
+}));
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
