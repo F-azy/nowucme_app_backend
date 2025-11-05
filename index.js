@@ -14,11 +14,15 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(cors({
+/*app.use(cors({
   origin: "*",
   credentials: true,
+}));*/
+app.use(cors({
+  origin:"*",
+  methods:["GET","POST","PUT","DELETE","OPTIONS"],
+  allowedHeaders:["Content-Type","Authorization"]
 }));
-
 
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
@@ -28,11 +32,11 @@ setInterval(cleanupUnverifiedUsers, 24 * 60 * 60 * 1000);
 cleanupUnverifiedUsers();
 
 app.get("/health", async (req, res) => {
-  if (req.query.passkey !== "imdev") {
+ /* if (req.query.passkey !== "imdev") {
     return res
       .status(401)
       .json({ success: false, message: "Permission Denied" });
-  }
+  }*/
 
   try {
     await pool.query("SELECT 1");
