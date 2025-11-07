@@ -1,29 +1,23 @@
 import { pool } from "../conn.js";
 
-// Toggle discover mode ON/OFF and save Bluetooth ID
+// Toggle discover mode ON/OFF
 export const toggleDiscover = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { bluetooth_id, discover_status, latitude, longitude } = req.body;
-
-    if (!bluetooth_id) {
-      return res.status(400).json({ error: "Bluetooth ID is required" });
-    }
+    const { discover_status, latitude, longitude } = req.body;
 
     // Update user's discover status and initial location
     const query = `
       UPDATE users
-      SET bluetooth_id = $1, 
-          discover_status = $2,
-          latitude = $3,
-          longitude = $4,
+      SET discover_status = $1,
+          latitude = $2,
+          longitude = $3,
           location_updated_at = NOW(),
           updated_at = NOW()
-      WHERE id = $5
-      RETURNING id, username, display_name, bluetooth_id, discover_status, latitude, longitude;
+      WHERE id = $4
+      RETURNING id, username, display_name, discover_status, latitude, longitude;
     `;
     const values = [
-      bluetooth_id,
       discover_status,
       latitude || null,
       longitude || null,
@@ -35,6 +29,7 @@ export const toggleDiscover = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
+    console.log(`✅ User ${userId} discover status: ${discover_status}`);
     res.json({ success: true, data: rows[0] });
   } catch (err) {
     console.error("Toggle discover error:", err.message);
@@ -97,7 +92,7 @@ export const getNearbyUsersByLocation = async (req, res) => {
         SELECT 
           id, display_name, username,
           instagram, twitter, linkedin, facebook,
-          profile_image, bluetooth_id,
+          profile_image,
           latitude, longitude,
           (
             6371000 * acos(
@@ -152,40 +147,7 @@ export const getNearbyUsersByLocation = async (req, res) => {
   }
 };
 
-// Verify proximity with bluetooth_ids (optional BLE verification)
-export const verifyBluetoothProximity = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const { bluetooth_ids } = req.body;
-
-    if (!bluetooth_ids || !Array.isArray(bluetooth_ids)) {
-      return res.json({ success: true, verified_users: [] });
-    }
-
-    // Return users that match both GPS proximity AND BLE detection
-    const query = `
-      SELECT id, display_name, username,
-             instagram, twitter, linkedin, facebook,
-             profile_image, bluetooth_id
-      FROM users
-      WHERE bluetooth_id = ANY($1)
-      AND discover_status = true
-      AND id != $2;
-    `;
-
-    const { rows } = await pool.query(query, [bluetooth_ids, userId]);
-
-    res.json({
-      success: true,
-      verified_users: rows,
-    });
-  } catch (err) {
-    console.error("Verify bluetooth proximity error:", err.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-// Heartbeat ( keeps user active in discovery)
+// Heartbeat (keeps user active in discovery)
 export const updateDiscoverHeartbeat = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -198,7 +160,7 @@ export const updateDiscoverHeartbeat = async (req, res) => {
           location_updated_at = NOW(),
           updated_at = NOW()
       WHERE id = $3 AND discover_status = true
-      RETURNING id, updated_at, location_updated_at;
+      RETURNING id, latitude, longitude, updated_at, location_updated_at;
     `;
 
     const { rows } = await pool.query(query, [
@@ -207,6 +169,11 @@ export const updateDiscoverHeartbeat = async (req, res) => {
       userId,
     ]);
 
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "User not found or discovery disabled" });
+    }
+
+    console.log(`💓 Heartbeat from user ${userId}`);
     res.json({ success: true, data: rows[0] });
   } catch (err) {
     console.error("Heartbeat error:", err.message);

@@ -21,7 +21,6 @@ export async function createUsersTable() {
       twitter VARCHAR(255),
       linkedin VARCHAR(255),
       facebook VARCHAR(255),
-      bluetooth_id VARCHAR(255),
       discover_status BOOLEAN DEFAULT false,
       latitude DECIMAL(10, 8),
       longitude DECIMAL(11, 8),
@@ -39,7 +38,6 @@ export async function createUsersTable() {
 export async function migrateUsersTable() {
   try {
     const migrations = [
-      `ALTER TABLE users ADD COLUMN IF NOT EXISTS bluetooth_id VARCHAR(255);`,
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS discover_status BOOLEAN DEFAULT false;`,
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS latitude DECIMAL(10, 8);`,
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS longitude DECIMAL(11, 8);`,
@@ -65,7 +63,6 @@ export async function migrateUsersTable() {
 export async function createUsersIndexes() {
   try {
     const indexes = [
-      `CREATE INDEX IF NOT EXISTS idx_users_bluetooth_id ON users(bluetooth_id);`,
       `CREATE INDEX IF NOT EXISTS idx_users_discover_status ON users(discover_status);`,
       `CREATE INDEX IF NOT EXISTS idx_users_location ON users(latitude, longitude);`,
       `CREATE INDEX IF NOT EXISTS idx_users_discover_location ON users(discover_status, latitude, longitude) WHERE discover_status = true;`,

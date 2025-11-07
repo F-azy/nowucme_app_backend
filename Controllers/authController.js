@@ -2,7 +2,12 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { pool } from "../conn.js";
 import { findUserByEmail } from "../Models/userModel.js";
-import { sendVerificationEmail } from "../services/emailService.js";
+import { 
+  sendVerificationEmail,
+  sendPasswordChangeNotification,
+  sendEmailChangeNotification,
+  sendEmailChangeConfirmation
+} from "../services/emailService.js";
 
 // Generate 6-digit OTP
 const generateOTP = () => {
@@ -224,7 +229,7 @@ export const login = async (req, res) => {
 // controllers/authController.js
 //-------
 
-// Change Password
+// ✅ Update changePassword function
 export const changePassword = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -240,9 +245,9 @@ export const changePassword = async (req, res) => {
         .json({ error: "Password must be at least 6 characters" });
     }
 
-    // Get user's current password
+    // Get user's current password AND email
     const userQuery = await pool.query(
-      "SELECT password_hash FROM users WHERE id = $1",
+      "SELECT password_hash, email, username FROM users WHERE id = $1",
       [userId]
     );
 
@@ -250,10 +255,12 @@ export const changePassword = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
+    const user = userQuery.rows[0];
+
     // Verify current password
     const isValid = await bcrypt.compare(
       currentPassword,
-      userQuery.rows[0].password_hash
+      user.password_hash
     );
     if (!isValid) {
       return res.status(401).json({ error: "Current password is incorrect" });
@@ -267,6 +274,9 @@ export const changePassword = async (req, res) => {
       "UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2",
       [newHash, userId]
     );
+
+    // ✅ Send security notification email
+    await sendPasswordChangeNotification(user.email, user.username);
 
     console.log(`✅ Password changed for user ${userId}`);
     res.json({ success: true, message: "Password changed successfully" });
@@ -471,8 +481,7 @@ export const requestEmailChangeOTP = async (req, res) => {
       .json({ error: "Internal server error", details: error.message });
   }
 };
-
-// Verify OTP and change email
+// ✅ Update verifyEmailChangeOTP function
 export const verifyEmailChangeOTP = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -483,7 +492,7 @@ export const verifyEmailChangeOTP = async (req, res) => {
     }
 
     const userQuery = await pool.query(
-      "SELECT verification_otp, otp_expires_at FROM users WHERE id = $1",
+      "SELECT email, username, verification_otp, otp_expires_at FROM users WHERE id = $1",
       [userId]
     );
 
@@ -492,6 +501,7 @@ export const verifyEmailChangeOTP = async (req, res) => {
     }
 
     const user = userQuery.rows[0];
+    const oldEmail = user.email; // ✅ Store old email before update
 
     if (new Date() > new Date(user.otp_expires_at)) {
       return res.status(400).json({ error: "OTP expired" });
@@ -507,14 +517,19 @@ export const verifyEmailChangeOTP = async (req, res) => {
       [newEmail, userId]
     );
 
-    console.log(`✅ Email changed for user ${userId}`);
+    // ✅ Send notifications to both old and new email
+    await Promise.all([
+      sendEmailChangeNotification(oldEmail, newEmail, user.username),
+      sendEmailChangeConfirmation(newEmail, user.username)
+    ]);
+
+    console.log(`✅ Email changed for user ${userId} from ${oldEmail} to ${newEmail}`);
     res.json({ success: true, message: "Email changed successfully" });
   } catch (error) {
     console.error("Verify email change OTP error:", error.message);
     res.status(500).json({ error: "Internal server error" });
   }
 };
-
 // Request OTP for forgot password
 export const requestForgotPasswordOTP = async (req, res) => {
   try {

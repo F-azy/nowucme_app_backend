@@ -36,11 +36,11 @@ export const initializeDatabase = async () => {
     );
 
     if (result.rowCount === 0) {
-      console.log(`⚙️ Database "${dbName}" not found. Creating...`);
+      console.log(`Database "${dbName}" not found. Creating...`);
       await defaultPool.query(`CREATE DATABASE "${dbName}";`);
-      console.log(`✅ Database "${dbName}" created successfully.`);
+      console.log(`Database "${dbName}" created successfully.`);
     } else {
-      console.log(`ℹ️ Database "${dbName}" already exists.`);
+      console.log(`Database "${dbName}" already exists.`);
     }
 
     await defaultPool.end();
