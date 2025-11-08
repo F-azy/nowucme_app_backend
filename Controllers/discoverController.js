@@ -74,7 +74,7 @@ export const updateLocation = async (req, res) => {
 export const getNearbyUsersByLocation = async (req, res) => {
   try {
     const userId = req.user.id;
-    const { latitude, longitude, radius_meters = 100 } = req.body;
+    const { latitude, longitude, radius_meters = 50 } = req.body;
 
     console.log(`🔍 User ${userId} searching from:`, {
       latitude,
@@ -86,7 +86,7 @@ export const getNearbyUsersByLocation = async (req, res) => {
       return res.status(400).json({ error: "Location coordinates required" });
     }
 
-    // Use subquery to calculate distance first, then filter
+    // ✅ Stricter query: Only users with recent, accurate locations
     const query = `
       SELECT * FROM (
         SELECT 
@@ -94,6 +94,7 @@ export const getNearbyUsersByLocation = async (req, res) => {
           instagram, twitter, linkedin, facebook,
           profile_image,
           latitude, longitude,
+          location_updated_at,
           (
             6371000 * acos(
               LEAST(1.0, 
@@ -108,7 +109,9 @@ export const getNearbyUsersByLocation = async (req, res) => {
         AND id != $3
         AND latitude IS NOT NULL
         AND longitude IS NOT NULL
-        AND location_updated_at > NOW() - INTERVAL '5 minutes'
+        AND latitude BETWEEN $1 - 0.001 AND $1 + 0.001
+        AND longitude BETWEEN $2 - 0.001 AND $2 + 0.001
+        AND location_updated_at > NOW() - INTERVAL '2 minutes'
       ) AS nearby_users
       WHERE distance_meters <= $4
       ORDER BY distance_meters ASC
@@ -128,7 +131,7 @@ export const getNearbyUsersByLocation = async (req, res) => {
         console.log(
           `   - ${user.display_name || user.username}: ${Math.round(
             user.distance_meters
-          )}m`
+          )}m away (updated ${Math.round((Date.now() - new Date(user.location_updated_at)) / 1000)}s ago)`
         );
       });
     }
@@ -147,36 +150,3 @@ export const getNearbyUsersByLocation = async (req, res) => {
   }
 };
 
-// Heartbeat (keeps user active in discovery)
-export const updateDiscoverHeartbeat = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const { latitude, longitude } = req.body;
-
-    const query = `
-      UPDATE users
-      SET latitude = COALESCE($1, latitude),
-          longitude = COALESCE($2, longitude),
-          location_updated_at = NOW(),
-          updated_at = NOW()
-      WHERE id = $3 AND discover_status = true
-      RETURNING id, latitude, longitude, updated_at, location_updated_at;
-    `;
-
-    const { rows } = await pool.query(query, [
-      latitude || null,
-      longitude || null,
-      userId,
-    ]);
-
-    if (rows.length === 0) {
-      return res.status(404).json({ error: "User not found or discovery disabled" });
-    }
-
-    console.log(`💓 Heartbeat from user ${userId}`);
-    res.json({ success: true, data: rows[0] });
-  } catch (err) {
-    console.error("Heartbeat error:", err.message);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};

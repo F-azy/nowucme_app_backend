@@ -4,7 +4,6 @@ import {
   toggleDiscover, 
   updateLocation,
   getNearbyUsersByLocation,
-  updateDiscoverHeartbeat 
 } from '../Controllers/discoverController.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
 
@@ -14,6 +13,6 @@ router.post('/toggle', authMiddleware, toggleDiscover);
 router.post('/update-location', authMiddleware, updateLocation);
 router.post('/nearby', authMiddleware, getNearbyUsersByLocation);
 
-router.post('/heartbeat', authMiddleware, updateDiscoverHeartbeat);
+
 
 export default router;
