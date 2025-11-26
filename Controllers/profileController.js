@@ -97,7 +97,7 @@ export const deleteProfileImage = async (req, res) => {
         .join("/")
         .split(".")[0];
       await cloudinary.uploader.destroy(publicId);
-      console.log(`✅ Deleted image from Cloudinary: ${publicId}`);
+      console.log(`Deleted image from Cloudinary: ${publicId}`);
     } catch (cloudinaryError) {
       console.error("Cloudinary deletion error:", cloudinaryError.message);
       // Continue even if Cloudinary delete fails
