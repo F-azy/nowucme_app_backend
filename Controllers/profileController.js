@@ -70,48 +70,77 @@ export const uploadProfileImage = async (req, res) => {
   }
 };
 
-// Delete profile image
+// Delete profile image-upadted after 2nd chat
 export const deleteProfileImage = async (req, res) => {
   try {
     const userId = req.user.id;
-
+    
     // Get current image URL
     const userQuery = await pool.query(
       "SELECT profile_image FROM users WHERE id = $1",
       [userId]
     );
-
+    
     const currentImage = userQuery.rows[0]?.profile_image;
-
+    
     if (!currentImage) {
       return res.status(400).json({ error: "No profile image to delete" });
     }
-
+    
     // Delete from Cloudinary if exists
     try {
       // Extract public_id from Cloudinary URL
-      // Example URL: https://res.cloudinary.com/cloud/image/upload/v123/nowucme/profiles/abc123.jpg
-      const publicId = currentImage
-        .split("/")
-        .slice(-2)
-        .join("/")
-        .split(".")[0];
-      await cloudinary.uploader.destroy(publicId);
-      console.log(`Deleted image from Cloudinary: ${publicId}`);
+      // Example: https://res.cloudinary.com/cloud/image/upload/v123/nowucme/profiles/abc123.jpg
+      // Expected public_id: nowucme/profiles/abc123
+      
+      console.log("🔍 Original URL:", currentImage);
+      
+      // Method 1: Using regex (most reliable)
+      const regex = /\/upload\/(?:v\d+\/)?(.+?)(?:\.\w+)?$/;
+      const match = currentImage.match(regex);
+      
+      if (!match) {
+        throw new Error("Could not extract public_id from Cloudinary URL");
+      }
+      
+      let publicId = match[1];
+      
+      // Remove file extension if still present
+      publicId = publicId.replace(/\.\w+$/, '');
+      
+      console.log("🎯 Extracted public_id:", publicId);
+      
+      // Delete from Cloudinary
+      const result = await cloudinary.uploader.destroy(publicId, {
+        invalidate: true, // ✅ Invalidate CDN cache
+        resource_type: 'image' // ✅ Specify resource type
+      });
+      
+      console.log("📊 Cloudinary deletion result:", result);
+      
+      if (result.result === "ok") {
+        console.log(`✅ Successfully deleted from Cloudinary: ${publicId}`);
+      } else if (result.result === "not found") {
+        console.log(`⚠️ Image not found in Cloudinary (may be already deleted): ${publicId}`);
+      } else {
+        console.log(`⚠️ Unexpected Cloudinary result: ${result.result}`);
+      }
+      
     } catch (cloudinaryError) {
-      console.error("Cloudinary deletion error:", cloudinaryError.message);
-      // Continue even if Cloudinary delete fails
+      console.error("❌ Cloudinary deletion error:", cloudinaryError);
+      // Continue even if Cloudinary delete fails - still remove from DB
     }
-
+    
     // Remove from database
     await pool.query("UPDATE users SET profile_image = NULL WHERE id = $1", [
       userId,
     ]);
-
-    console.log(`✅ Profile image deleted for user ${userId}`);
-    res.json({ success: true, message: "Profile image deleted" });
+    
+    console.log(`✅ Profile image removed from database for user ${userId}`);
+    res.json({ success: true, message: "Profile image deleted successfully" });
+    
   } catch (err) {
-    console.error("Delete image error:", err.message);
+    console.error("❌ Delete image error:", err.message);
     res.status(500).json({ error: "Failed to delete image" });
   }
 };
