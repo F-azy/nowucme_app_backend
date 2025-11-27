@@ -28,8 +28,7 @@ app.use(cors({
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/discover", discoverRoutes);
-app.use('/api', surveyRoutes);
-
+app.use('/api/survey', surveyRoutes);
 setInterval(cleanupUnverifiedUsers, 24 * 60 * 60 * 1000);
 cleanupUnverifiedUsers();
 
