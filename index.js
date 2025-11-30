@@ -40,6 +40,16 @@ app.use("/api/discover", discoverRoutes);
 app.use("/api/survey", surveyRoutes);
 
 // HTML routes
+// Robots.txt route
+app.get("/robots.txt", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "robots.txt"));
+});
+
+// Sitemap.xml route
+app.get("/sitemap.xml", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "sitemap.xml"));
+});
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
@@ -62,6 +72,8 @@ app.get("/cookie-policy", (req, res) => {
 app.get("/terms-of-service", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "terms-of-service.html"));
 });
+
+
 
 // Health check route (unchanged)
 app.get("/health", async (req, res) => {
