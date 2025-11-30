@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NowUCme - Discover People Nearby Instantly</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-20px);
+      }
+    }
+
+    .float-animation {
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 20px rgba(132, 254, 113, 0.5);
+      }
+
+      50% {
+        box-shadow: 0 0 40px rgba(132, 254, 113, 0.8);
+      }
+    }
+
+    .pulse-glow {
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+
+    .phone-frame {
+      background: linear-gradient(145deg, #1f2937, #111827);
+      border-radius: 40px;
+      padding: 12px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .phone-screen {
+      border-radius: 32px;
+      overflow: hidden;
+      background: #000;
+      aspect-ratio: 9/19.5;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #84fe71 0%, #22c55e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .bg-gradient-primary {
+      background: linear-gradient(135deg,
+          #f0fdf4 0%,
+          #dcfce7 50%,
+          #fef3c7 100%);
+    }
+
+    .feature-card {
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-avatar {
+      transition: transform 0.3s ease;
+    }
+
+    .user-avatar:hover {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-primary">
+
+
+
+How can I help you today?
+
+
+
+
+
+
+<!-- Replace your existing navigation section with this updated version -->
+
+<nav class="fixed top-0 w-full bg-white/80 backdrop-blur-lg z-50 border-b-4 border-black">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-20">
+
+      <!-- Logo Section -->
+      <div class="flex items-center space-x-3">
+        <img
+          src="https://res.cloudinary.com/dw7ng0yjj/image/upload/w_60,h_60,c_fit,q_auto,f_auto/v1765000000/logo2_t2rvky.png"
+          alt="nowUCme Logo" class="w-12 h-12 object-contain border-2 border-black rounded-full bg-white shadow-md" />
+        <span class="text-3xl font-extrabold text-black">nowUCme</span>
+      </div>
+
+      <!-- Desktop Menu -->
+      <div class="hidden md:flex items-center space-x-8">
+        <a href="#features" class="text-gray-700 hover:text-[#84fe71] font-semibold transition">Features</a>
+        <a href="#how-it-works" class="text-gray-700 hover:text-[#84fe71] font-semibold transition">How It Works</a>
+        <a href="#testimonials" class="text-gray-700 hover:text-[#84fe71] font-semibold transition">Testimonials</a>
+        <a href="#survey"
+          class="bg-[#84fe71] text-black px-6 py-3 rounded-full font-bold border-2 border-black hover:bg-[#6fe05f] transition">
+          Join Waitlist
+        </a>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button id="mobileMenuBtn" class="md:hidden text-black z-50">
+        <svg id="hamburgerIcon" class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+        <svg id="closeIcon" class="w-8 h-8 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="hidden md:hidden pb-6">
+      <div class="flex flex-col space-y-4">
+        <a href="#features" class="text-gray-700 hover:text-[#84fe71] font-semibold transition py-2">Features</a>
+        <a href="#how-it-works" class="text-gray-700 hover:text-[#84fe71] font-semibold transition py-2">How It Works</a>
+        <a href="#testimonials" class="text-gray-700 hover:text-[#84fe71] font-semibold transition py-2">Testimonials</a>
+        <a href="#survey"
+          class="bg-[#84fe71] text-black px-6 py-3 rounded-full font-bold border-2 border-black hover:bg-[#6fe05f] transition text-center">
+          Join Waitlist
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section - RESPONSIVE VERSION -->
+<section class="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+      <!-- Left Content -->
+      <div class="text-center lg:text-left order-2 lg:order-1">
+        <div class="inline-block bg-[#84fe71] px-3 sm:px-4 py-2 rounded-full border-2 border-black mb-4 sm:mb-6">
+          <span class="font-bold text-black text-sm sm:text-base">🚀 Coming Soon to iOS & Android</span>
+        </div>
+
+        <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-black leading-tight mb-4 sm:mb-6">
+          Meet People
+          <span class="gradient-text block">Nearby, Instantly</span>
+        </h1>
+
+        <p class="text-base sm:text-lg lg:text-xl text-gray-700 mb-6 sm:mb-8 leading-relaxed px-2 sm:px-0">
+          Discover who's around you in real-time. Share your social profiles
+          instantly at events, meetups, and tech fests. No more awkward
+          username exchanges.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start mb-8 sm:mb-12 px-4 sm:px-0">
+          <div
+            class="bg-black text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-base sm:text-lg border-4 border-black hover:bg-gray-900 transition flex items-center justify-center gap-2 sm:gap-3 pulse-glow">
+            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+            </svg>
+            <span>Coming Soon</span>
+          </div>
+          <div
+            class="bg-[#84fe71] text-black px-6 sm:px-8 py-3 sm:py-4 rounded-full font-bold text-base sm:text-lg border-4 border-black hover:bg-[#6fe05f] transition flex items-center justify-center gap-2 sm:gap-3">
+            <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z" />
+            </svg>
+            <span>Coming Soon</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Content - Phone Mockups -->
+      <div class="relative order-1 lg:order-2 mb-8 lg:mb-0">
+        <div class="flex justify-center items-center gap-4 sm:gap-6 lg:gap-8 float-animation">
+          <!-- Phone 1 -->
+          <div class="phone-frame w-40 sm:w-56 md:w-64 lg:w-72 transform -rotate-6 hover:rotate-0 transition duration-500">
+            <div class="phone-screen">
+              <video autoplay loop muted playsinline class="w-full h-full object-cover">
+                <source src="/landingvid.mp4" type="video/mp4" />
+                <div
+                  class="w-full h-full bg-gradient-to-br from-[#84fe71] to-[#22c55e] flex items-center justify-center">
+                  <span class="text-white text-lg sm:text-xl lg:text-2xl font-bold">Demo 1</span>
+                </div>
+              </video>
+            </div>
+          </div>
+
+          <!-- Phone 2 -->
+          <div class="phone-frame w-40 sm:w-56 md:w-64 lg:w-72 transform rotate-6 hover:rotate-0 transition duration-500">
+            <div class="phone-screen">
+              <video autoplay loop muted playsinline class="w-full h-full object-cover">
+                <source src="/landingvid.mp4" type="video/mp4" />
+                <div
+                  class="w-full h-full bg-gradient-to-br from-[#22c55e] to-[#84fe71] flex items-center justify-center">
+                  <span class="text-white text-lg sm:text-xl lg:text-2xl font-bold">Demo 2</span>
+                </div>
+              </video>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating Elements - Hidden on mobile -->
+        <div
+          class="hidden sm:block absolute -top-10 -left-10 w-16 h-16 sm:w-20 sm:h-20 bg-yellow-300 rounded-full border-4 border-black opacity-70">
+        </div>
+        <div
+          class="hidden sm:block absolute -bottom-10 -right-10 w-24 h-24 sm:w-32 sm:h-32 bg-pink-300 rounded-full border-4 border-black opacity-70">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- User Count Section - RESPONSIVE VERSION -->
+<section class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto">
+    <div class="bg-white rounded-2xl sm:rounded-3xl border-4 border-black p-6 sm:p-8 lg:p-12 shadow-2xl">
+      <!-- User Avatars -->
+      <div class="flex justify-center mb-6 sm:mb-8">
+        <div class="flex -space-x-3 sm:-space-x-4">
+          <!-- Avatar 1 -->
+          <div class="user-avatar w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full border-4 border-white overflow-hidden shadow-lg">
+            <img
+              src="https://res.cloudinary.com/dw7ng0yjj/image/upload/w_200,h_200,c_fill,q_auto,f_auto/v1764076804/un1_mpwi96.png"
+              alt="User 1" class="w-full h-full object-cover" />
+          </div>
+
+          <!-- Avatar 2 -->
+          <div class="user-avatar w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full border-4 border-white overflow-hidden shadow-lg">
+            <img
+              src="https://res.cloudinary.com/dw7ng0yjj/image/upload/w_200,h_200,c_fill,q_auto,f_auto/v1764078111/un2_jnihdb.jpg"
+              alt="User 2" class="w-full h-full object-cover" />
+          </div>
+
+          <!-- Avatar 3 -->
+          <div class="user-avatar w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full border-4 border-white overflow-hidden shadow-lg">
+            <img
+              src="https://res.cloudinary.com/dw7ng0yjj/image/upload/w_200,h_200,c_fill,q_auto,f_auto/v1764078850/un3_jp5dzm.jpg"
+              alt="User 3" class="w-full h-full object-cover" />
+          </div>
+
+          <!-- Avatar 4 -->
+          <div class="user-avatar w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full border-4 border-white overflow-hidden shadow-lg">
+            <img
+              src="https://res.cloudinary.com/dw7ng0yjj/image/upload/w_200,h_200,c_fill,q_auto,f_auto/v1764081812/un4_sw1lky.jpg"
+              alt="User 4" class="w-full h-full object-cover" />
+          </div>
+
+          <!-- Avatar 5 -->
+          <div class="user-avatar w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full border-4 border-white overflow-hidden shadow-lg">
+            <img
+              src="https://res.cloudinary.com/dw7ng0yjj/image/upload/w_200,h_200,c_fill,q_auto,f_auto/v1764081812/Picsart_25-11-25_20-48-18-417_yvfzlm.jpg"
+              alt="User 5" class="w-full h-full object-cover" />
+          </div>
+
+          <!-- Avatar 6 -->
+          <div class="user-avatar w-14 h-14 sm:w-16 sm:h-16 lg:w-20 lg:h-20 rounded-full border-4 border-white overflow-hidden shadow-lg">
+            <img
+              src="https://res.cloudinary.com/dw7ng0yjj/image/upload/w_200,h_200,c_fill,q_auto,f_auto/v1764081812/Picsart_25-11-25_21-18-00-372_fv42og.jpg"
+              alt="User 6" class="w-full h-full object-cover" />
+          </div>
+        </div>
+      </div>
+
+      <!-- User Count -->
+      <div class="text-center px-4">
+        <div class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-black mb-2">1,000+</div>
+        <div class="text-lg sm:text-xl lg:text-2xl text-gray-600 font-semibold mb-2 sm:mb-0">Users Ready to Connect</div>
+        <p class="text-sm sm:text-base lg:text-lg text-gray-500 mt-3 sm:mt-4 max-w-2xl mx-auto leading-relaxed">
+          Join thousands of people excited to discover and connect with others
+          nearby at events, meetups, and conferences worldwide.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-5xl font-extrabold text-black mb-4">Why NowUCme?</h2>
+        <p class="text-xl text-gray-600">
+          The easiest way to connect with people around you
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Feature 1 -->
+        <div class="feature-card bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-3xl border-4 border-black">
+          <div class="w-16 h-16 bg-[#84fe71] rounded-2xl border-4 border-black flex items-center justify-center mb-6">
+            <span class="text-4xl">📍</span>
+          </div>
+          <h3 class="text-2xl font-bold text-black mb-4">
+            Real-Time Discovery
+          </h3>
+          <p class="text-gray-700 leading-relaxed">
+            Find people within 50 meters using GPS. Perfect for events,
+            conferences, and meetups.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="feature-card bg-gradient-to-br from-blue-50 to-blue-100 p-8 rounded-3xl border-4 border-black">
+          <div class="w-16 h-16 bg-blue-400 rounded-2xl border-4 border-black flex items-center justify-center mb-6">
+            <span class="text-4xl">🔗</span>
+          </div>
+          <h3 class="text-2xl font-bold text-black mb-4">
+            Instant Social Links
+          </h3>
+          <p class="text-gray-700 leading-relaxed">
+            Share Instagram, LinkedIn, Twitter instantly. No more spelling out
+            usernames.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="feature-card bg-gradient-to-br from-purple-50 to-purple-100 p-8 rounded-3xl border-4 border-black">
+          <div class="w-16 h-16 bg-purple-400 rounded-2xl border-4 border-black flex items-center justify-center mb-6">
+            <span class="text-4xl">🔒</span>
+          </div>
+          <h3 class="text-2xl font-bold text-black mb-4">Privacy First</h3>
+          <p class="text-gray-700 leading-relaxed">
+            You control when you're discoverable. Turn off anytime to protect
+            your privacy.
+          </p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="feature-card bg-gradient-to-br from-yellow-50 to-yellow-100 p-8 rounded-3xl border-4 border-black">
+          <div class="w-16 h-16 bg-yellow-400 rounded-2xl border-4 border-black flex items-center justify-center mb-6">
+            <span class="text-4xl">⚡</span>
+          </div>
+          <h3 class="text-2xl font-bold text-black mb-4">Lightning Fast</h3>
+          <p class="text-gray-700 leading-relaxed">
+            Discover and connect in seconds. No sign-up friction, just instant
+            connections.
+          </p>
+        </div>
+
+        <!-- Feature 5 -->
+        <div class="feature-card bg-gradient-to-br from-pink-50 to-pink-100 p-8 rounded-3xl border-4 border-black">
+          <div class="w-16 h-16 bg-pink-400 rounded-2xl border-4 border-black flex items-center justify-center mb-6">
+            <span class="text-4xl">🎯</span>
+          </div>
+          <h3 class="text-2xl font-bold text-black mb-4">Event Perfect</h3>
+          <p class="text-gray-700 leading-relaxed">
+            Ideal for tech fests, networking events, and conferences. Meet the
+            right people.
+          </p>
+        </div>
+
+        <!-- Feature 6 -->
+        <div class="feature-card bg-gradient-to-br from-orange-50 to-orange-100 p-8 rounded-3xl border-4 border-black">
+          <div class="w-16 h-16 bg-orange-400 rounded-2xl border-4 border-black flex items-center justify-center mb-6">
+            <span class="text-4xl">🌍</span>
+          </div>
+          <h3 class="text-2xl font-bold text-black mb-4">Cross-Platform</h3>
+          <p class="text-gray-700 leading-relaxed">
+            Available on iOS and Android. Works seamlessly across all devices.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how-it-works" class="py-20 bg-gradient-to-br from-[#84fe71] to-[#22c55e]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-5xl font-extrabold text-black mb-4">How It Works</h2>
+        <p class="text-xl text-black/80">
+          Three simple steps to start connecting
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Step 1 -->
+        <div class="bg-white rounded-3xl border-4 border-black p-8 text-center transform hover:scale-105 transition">
+          <div
+            class="w-20 h-20 bg-black text-white rounded-full flex items-center justify-center text-4xl font-bold mx-auto mb-6">
+            1
+          </div>
+          <h3 class="text-2xl font-bold text-black mb-4">Enable Discovery</h3>
+          <p class="text-gray-700 leading-relaxed">
+            Toggle discover mode ON when you're at an event or want to meet
+            people nearby.
+          </p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="bg-white rounded-3xl border-4 border-black p-8 text-center transform hover:scale-105 transition">
+          <div
+            class="w-20 h-20 bg-black text-white rounded-full flex items-center justify-center text-4xl font-bold mx-auto mb-6">
+            2
+          </div>
+          <h3 class="text-2xl font-bold text-black mb-4">See Nearby Users</h3>
+          <p class="text-gray-700 leading-relaxed">
+            Instantly see people within 50 meters who also have discover mode
+            enabled.
+          </p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="bg-white rounded-3xl border-4 border-black p-8 text-center transform hover:scale-105 transition">
+          <div
+            class="w-20 h-20 bg-black text-white rounded-full flex items-center justify-center text-4xl font-bold mx-auto mb-6">
+            3
+          </div>
+          <h3 class="text-2xl font-bold text-black mb-4">
+            Connect Instantly
+          </h3>
+          <p class="text-gray-700 leading-relaxed">
+            Tap to view their social profiles and connect on Instagram,
+            LinkedIn, or Twitter.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Survey Section -->
+  <section id="survey" class="py-20 bg-white">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-gradient-to-br from-[#84fe71] to-[#22c55e] rounded-3xl border-4 border-black p-12 shadow-2xl">
+        <div class="text-center mb-10">
+          <h2 class="text-4xl md:text-5xl font-extrabold text-black mb-4">
+            Will You Use NowUCme?
+          </h2>
+          <p class="text-xl text-black/80">
+            Help us understand our future users! Share your interest and be the first to know when we launch.
+          </p>
+        </div>
+
+        <form id="surveyForm" class="space-y-6">
+          <!-- Name Field -->
+          <div>
+            <label for="name" class="block text-black font-bold mb-2 text-lg">
+              Your Name <span class="text-red-600">*</span>
+            </label>
+            <input type="text" id="name" name="name" required
+              class="w-full px-6 py-4 rounded-2xl border-4 border-black text-lg focus:outline-none focus:ring-4 focus:ring-black/20"
+              placeholder="Enter your name" />
+          </div>
+
+          <!-- Email Field -->
+          <div>
+            <label for="email" class="block text-black font-bold mb-2 text-lg">
+              Your Email <span class="text-red-600">*</span>
+            </label>
+            <input type="email" id="email" name="email" required
+              class="w-full px-6 py-4 rounded-2xl border-4 border-black text-lg focus:outline-none focus:ring-4 focus:ring-black/20"
+              placeholder="your.email@example.com" />
+          </div>
+
+          <!-- Gender Selection -->
+          <div>
+            <label class="block text-black font-bold mb-4 text-lg">
+              Gender <span class="text-red-600">*</span>
+            </label>
+            <div class="flex flex-wrap gap-4">
+              <label class="flex items-center cursor-pointer">
+                <input type="radio" name="gender" value="Male" required
+                  class="w-6 h-6 text-black border-4 border-black focus:ring-black" />
+                <span class="ml-3 text-black font-semibold text-lg">Male</span>
+              </label>
+              <label class="flex items-center cursor-pointer">
+                <input type="radio" name="gender" value="Female" required
+                  class="w-6 h-6 text-black border-4 border-black focus:ring-black" />
+                <span class="ml-3 text-black font-semibold text-lg">Female</span>
+              </label>
+              <label class="flex items-center cursor-pointer">
+                <input type="radio" name="gender" value="Other" required
+                  class="w-6 h-6 text-black border-4 border-black focus:ring-black" />
+                <span class="ml-3 text-black font-semibold text-lg">Other</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit"
+            class="w-full bg-black text-white px-8 py-5 rounded-full font-bold text-xl border-4 border-black hover:bg-gray-900 transition pulse-glow">
+            Count Me In! 🚀
+          </button>
+
+          <!-- Success Message -->
+          <div id="successMessage" class="hidden mt-6 p-6 bg-white rounded-2xl border-4 border-black text-center">
+            <p class="text-2xl font-bold text-black mb-2">🎉 Thank You!</p>
+            <p class="text-gray-700">We'll notify you as soon as NowUCme launches!</p>
+          </div>
+
+          <!-- Error Message -->
+          <div id="errorMessage" class="hidden mt-6 p-6 bg-red-100 rounded-2xl border-4 border-red-600 text-center">
+            <p class="text-xl font-bold text-red-600">⚠️ Oops! Something went wrong.</p>
+            <p class="text-red-700">Please try again later.</p>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+  <!-- Testimonials -->
+  <section id="testimonials" class="py-20 bg-gradient-primary">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-5xl font-extrabold text-black mb-4">
+          What People Are Saying
+        </h2>
+        <p class="text-xl text-gray-600">
+          Early adopters excited about NowUCme
+        </p>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-8">
+        <!-- Testimonial 1 -->
+        <div class="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-3xl border-4 border-black">
+          <div class="flex items-center mb-6">
+            <!-- Avatar with Image -->
+            <div class="w-16 h-16 rounded-full border-4 border-black overflow-hidden flex items-center justify-center">
+              <img
+                src="https://res.cloudinary.com/dw7ng0yjj/image/upload/w_120,h_120,c_fill,q_auto,f_auto/v1234567890/rinshad_t8yrld.jpg"
+                alt="Mohammad Rinshad" class="w-full h-full object-cover" />
+            </div>
+
+            <!-- Text -->
+            <div class="ml-4">
+              <div class="font-bold text-black text-lg">Mohammad Rinshad</div>
+              <div class="text-gray-600">Software Developer</div>
+            </div>
+          </div>
+
+          <p class="text-gray-700 leading-relaxed">
+            "Can't wait for NowUCme to launch! This will make networking at our tech fest so much easier. Already told
+            my friends about it!"
+          </p>
+
+          <!-- Rating -->
+          <div class="mt-4 text-yellow-500 text-xl">⭐⭐⭐⭐⭐</div>
+        </div>
+
+        <!-- Testimonial 2 -->
+        <div class="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-3xl border-4 border-black">
+          <div class="flex items-center mb-6">
+            <!-- Avatar with Image -->
+            <div class="w-16 h-16 rounded-full border-4 border-black overflow-hidden flex items-center justify-center">
+              <img
+                src="https://res.cloudinary.com/dw7ng0yjj/image/upload/w_120,h_120,c_fill,q_auto,f_auto/v1234567890/nishan2.5.jpeg_w4db6e.jpg"
+                alt="Nishan Ali" class="w-full h-full object-cover" />
+            </div>
+            <!-- Text -->
+            <div class="ml-4">
+              <div class="font-bold text-black text-lg">Mohammad Nishan Ali</div>
+              <div class="text-gray-600">College Student</div>
+            </div>
+          </div>
+
+          <p class="text-gray-700 leading-relaxed">
+            "I’ve seen the early preview, and it’s exactly what students need during events. 
+            Once NowUCme goes live, I’m
+            definitely using it at our college hackathon!" </p>
+
+          <!-- Rating -->
+          <div class="mt-4 text-yellow-500 text-xl">⭐⭐⭐⭐⭐</div>
+        </div>
+
+
+
+        <!-- Testimonial 3 -->
+        <div class="bg-gradient-to-br from-green-50 to-green-100 p-8 rounded-3xl border-4 border-black">
+          <div class="flex items-center mb-6">
+            <!-- Avatar with Image -->
+            <div class="w-16 h-16 rounded-full border-4 border-black overflow-hidden flex items-center justify-center">
+              <img
+                src="https://res.cloudinary.com/dw7ng0yjj/image/upload/w_120,h_120,c_fill,q_auto,f_auto/v1234567890/amal2_kdjcok.jpg"
+                alt="Mohammad Rinshad" class="w-full h-full object-cover" />
+            </div>
+            <!-- Text -->
+            <div class="ml-4">
+              <div class="font-bold text-black text-lg">Amal K L</div>
+              <div class="text-gray-600">College Student</div>
+            </div>
+          </div>
+
+          <p class="text-gray-700 leading-relaxed">
+        "Before launch, the concept impressed our team. NowUCme will remove awkwardness in approaching people, and I’m eagerly waiting for it to finally go live!" </p>
+
+          <!-- Rating -->
+          <div class="mt-4 text-yellow-500 text-xl">⭐⭐⭐⭐⭐</div>
+        </div>
+
+  </section>
+
+  <!-- CTA Section -->
+  <section id="download" class="py-20 bg-black text-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-5xl md:text-6xl font-extrabold mb-6">
+        Ready to Meet People Nearby?
+      </h2>
+      <p class="text-xl text-gray-300 mb-12">
+        Join thousands of users already discovering and connecting with people
+        around them.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+        <a href="#"
+          class="bg-[#84fe71] text-black px-10 py-5 rounded-full font-bold text-lg border-4 border-[#84fe71] hover:bg-[#6fe05f] transition flex items-center justify-center gap-3">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+          </svg>
+          Coming soon
+        </a>
+        <a href="#"
+          class="bg-white text-black px-10 py-5 rounded-full font-bold text-lg border-4 border-white hover:bg-gray-100 transition flex items-center justify-center gap-3">
+          <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z" />
+          </svg>
+          Coming soon
+        </a>
+      </div>
+
+      <p class="text-gray-400">
+        Free to download • No credit card required • Available worldwide
+      </p>
+    </div>
+  </section>
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid md:grid-cols-4 gap-8 mb-8">
+
+        <!-- Logo + Description -->
+        <div>
+          <div class="flex items-center space-x-3 mb-4">
+            <img
+              src="https://res.cloudinary.com/dw7ng0yjj/image/upload/w_60,h_60,c_fit,q_auto,f_auto/v1765000000/logo2_t2rvky.png"
+              alt="nowUCme Logo" class="w-10 h-10 rounded-full border-2 border-white object-cover" />
+            <span class="text-2xl font-extrabold">nowUCme</span>
+          </div>
+          <p class="text-gray-400">
+            Discover people nearby, instantly share profiles, and make meaningful connections.
+          </p>
+        </div>
+        <!-- Product -->
+        <div>
+          <h3 class="font-bold text-lg mb-4">Product</h3>
+          <ul class="space-y-2 text-gray-400">
+            <li><a href="#features" class="hover:text-[#84fe71] transition">Features</a></li>
+            <li><a href="#how-it-works" class="hover:text-[#84fe71] transition">How It Works</a></li>
+           <!-- <li><a href="#" class="hover:text-[#84fe71] transition">Pricing</a></li> -->
+          <li><a href="faq" class="hover:text-[#84fe71] transition">FAQ</a></li> 
+          </ul>
+        </div>
+
+        <!-- Our Team -->
+        <div>
+          <h3 class="font-bold text-lg mb-4">Our Team</h3>
+          <ul class="space-y-2 text-gray-400">
+            <li><span class="font-semibold text-white">Faseen Anvar</span><br />Developer & Co-Founder</li>
+            <li>📞 97781 52306</li>
+            <li>📧 <a href="mailto:faseenanvar@gmail.com"
+                class="hover:text-[#84fe71] transition">faseenanvar@gmail.com</a></li>
+            <li class="pt-2"><span class="font-semibold text-white">Amal K L</span><br />Co-Founder</li>
+            <li>📞 +91 94478 97857</li>
+            <li>📧 <a href="mailto:amalkl4873@gmail.com" class="hover:text-[#84fe71] transition">amalkl4873@gmail.com</a></li>
+          </ul>
+        </div>
+
+        <!-- Legal -->
+        <div>
+          <h3 class="font-bold text-lg mb-4">Legal</h3>
+          <ul class="space-y-2 text-gray-400">
+            <li><a href="privacy-policy" class="hover:text-[#84fe71] transition">Privacy Policy</a></li>
+            <li><a href="terms-of-service" class="hover:text-[#84fe71] transition">Terms of Service</a></li>
+            <li><a href="cookie-policy" class="hover:text-[#84fe71] transition">Cookie Policy</a></li>
+
+          </ul>
+        </div>
+      </div>
+
+      <!-- Bottom Row -->
+      <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <p class="text-gray-400 text-sm">© 2025 nowUCme. All rights reserved.</p>
+
+        <div class="flex space-x-6 mt-4 md:mt-0">
+          <!-- Instagram -->
+          <a href="#" class="text-gray-400 hover:text-[#84fe71] transition">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2.2c3.2 0 ... (keep as it is) ..." />
+            </svg>
+          </a>
+          <!-- LinkedIn -->
+          <a href="#" class="text-gray-400 hover:text-[#84fe71] transition">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M19 0h-14c... (keep as it is) ..." />
+            </svg>
+          </a>
+          <!-- GitHub -->
+          <a href="#" class="text-gray-400 hover:text-[#84fe71] transition">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 0C5.37 0 ... (keep as it is) ..." />
+            </svg>
+          </a>
+          <!-- X/Twitter -->
+          <a href="#" class="text-gray-400 hover:text-[#84fe71] transition">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M19 0 ... (keep as it is) ..." />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    //  backend API- chnge later
+    const API_URL = 'https://nowucme.in/api/survey/submit-survey';
+
+
+    document.getElementById('surveyForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const form = e.target;
+      const submitButton = form.querySelector('button[type="submit"]');
+      const successMessage = document.getElementById('successMessage');
+      const errorMessage = document.getElementById('errorMessage');
+
+      // Get form data
+      const formData = {
+        name: form.name.value.trim(),
+        email: form.email.value.trim(),
+        gender: form.gender.value,
+        timestamp: new Date().toISOString()
+      };
+
+      // Disable submit button
+      submitButton.disabled = true;
+      submitButton.textContent = 'Submitting...';
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+          // Show success message
+          successMessage.classList.remove('hidden');
+          errorMessage.classList.add('hidden');
+          form.reset();
+
+          // Hide success message after 5 seconds
+          setTimeout(() => {
+            successMessage.classList.add('hidden');
+          }, 5000);
+        } else {
+          throw new Error(result.message || 'Submission failed');
+        }
+
+        // Re-enable button
+        submitButton.disabled = false;
+        submitButton.textContent = 'Count Me In! 🚀';
+
+      } catch (error) {
+        console.error('Error:', error);
+        // Show error message
+        errorMessage.classList.remove('hidden');
+        successMessage.classList.add('hidden');
+
+        // Re-enable button
+        submitButton.disabled = false;
+        submitButton.textContent = 'Count Me In! 🚀';
+      }
+    });
+  </script>
+
+  
+<script>
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const hamburgerIcon = document.getElementById('hamburgerIcon');
+  const closeIcon = document.getElementById('closeIcon');
+
+  mobileMenuBtn.addEventListener('click', function() {
+    mobileMenu.classList.toggle('hidden');
+    hamburgerIcon.classList.toggle('hidden');
+    closeIcon.classList.toggle('hidden');
+  });
+
+  // Close menu when clicking on a link
+  const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+  mobileMenuLinks.forEach(link => {
+    link.addEventListener('click', function() {
+      mobileMenu.classList.add('hidden');
+      hamburgerIcon.classList.remove('hidden');
+      closeIcon.classList.add('hidden');
+    });
+  });
+</script>
+
+</body>
+
+</html>

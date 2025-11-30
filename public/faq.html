@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FAQ - NowUCme</title>
+    <meta name="description" content="Frequently Asked Questions about NowUCme - Find answers to common questions.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      .bg-gradient-primary {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #fef3c7 100%);
+      }
+      .faq-item {
+        transition: all 0.3s ease;
+      }
+      .faq-item:hover {
+        transform: translateY(-2px);
+      }
+    </style>
+  </head>
+  <body class="bg-gradient-primary">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full bg-white/80 backdrop-blur-lg z-50 border-b-4 border-black">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
+          <a href="index" class="flex items-center space-x-3">
+            <img
+              src="https://res.cloudinary.com/dw7ng0yjj/image/upload/w_60,h_60,c_fit,q_auto,f_auto/v1765000000/logo2_t2rvky.png"
+              alt="nowUCme Logo"
+              class="w-12 h-12 object-contain border-2 border-black rounded-full bg-white shadow-md"
+            />
+            <span class="text-3xl font-extrabold text-black">nowUCme</span>
+          </a>
+          <a
+            href="index"
+            class="bg-[#84fe71] text-black px-6 py-3 rounded-full font-bold border-2 border-black hover:bg-[#6fe05f] transition"
+          >
+            Back to Home
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-5xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-12">
+          <h1 class="text-5xl md:text-6xl font-extrabold text-black mb-4">
+            ❓ Frequently Asked Questions
+          </h1>
+          <p class="text-xl text-gray-600">
+            Everything you need to know about NowUCme
+          </p>
+        </div>
+
+        <!-- FAQ Items -->
+        <div class="space-y-6">
+          
+          <!-- FAQ 1 -->
+          <div class="faq-item bg-white rounded-2xl border-4 border-black p-6 shadow-md">
+            <div class="flex items-start gap-4">
+              <span class="text-4xl">📱</span>
+              <div class="flex-1">
+                <h3 class="text-2xl font-bold text-black mb-3">1. What is NowUCme?</h3>
+                <p class="text-gray-700 leading-relaxed">
+                  NowUCme is a mobile app that helps users discover nearby people in real-time and instantly exchange social media profiles. It's perfect for use at events, meetups, tech fests, conferences, and networking sessions.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 2 -->
+          <div class="faq-item bg-white rounded-2xl border-4 border-black p-6 shadow-md">
+            <div class="flex items-start gap-4">
+              <span class="text-4xl">🎉</span>
+              <div class="flex-1">
+                <h3 class="text-2xl font-bold text-black mb-3">2. Is NowUCme launched?</h3>
+                <p class="text-gray-700 leading-relaxed">
+                  The app is currently in the final development and testing phase. We are planning a public launch soon. Early access and beta invitations will be provided to selected users.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 3 -->
+          <div class="faq-item bg-gradient-to-br from-green-50 to-green-100 rounded-2xl border-4 border-black p-6 shadow-md">
+            <div class="flex items-start gap-4">
+              <span class="text-4xl">📍</span>
+              <div class="flex-1">
+                <h3 class="text-2xl font-bold text-black mb-3">3. How does the nearby discovery work?</h3>
+                <p class="text-gray-700 mb-3">When "Discover Mode" is enabled in the app:</p>
+                <ul class="list-disc list-inside text-gray-700 space-y-2 ml-4">
+                  <li>Your encrypted location is sent to our server.</li>
+                  <li>You can see users who are within 50 meters and have also enabled discover mode.</li>
+                  <li>You can instantly view their social media profiles.</li>
+                  <li>Once you turn off discover mode, your location stops being shared.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 4 -->
+          <div class="faq-item bg-white rounded-2xl border-4 border-black p-6 shadow-md">
+            <div class="flex items-start gap-4">
+              <span class="text-4xl">🔒</span>
+              <div class="flex-1">
+                <h3 class="text-2xl font-bold text-black mb-3">4. Is my exact location shown to others?</h3>
+                <p class="text-gray-700 leading-relaxed mb-2">
+                  <strong>No.</strong> Your exact GPS location is never shared.
+                </p>
+                <p class="text-gray-700 leading-relaxed">
+                  Other users see only approximate distance (e.g., "50m away"), not your live coordinates.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 5 -->
+          <div class="faq-item bg-white rounded-2xl border-4 border-black p-6 shadow-md">
+            <div class="flex items-start gap-4">
+              <span class="text-4xl">👤</span>
+              <div class="flex-1">
+                <h3 class="text-2xl font-bold text-black mb-3">5. What information do other users see?</h3>
+                <p class="text-gray-700 mb-3">Only when discover mode is enabled:</p>
+                <ul class="list-disc list-inside text-gray-700 space-y-2 ml-4">
+                  <li>Your name</li>
+                  <li>Profile picture (optional)</li>
+                  <li>Social media usernames (optional)</li>
+                  <li>Approximate distance</li>
+                </ul>
+                <p class="text-gray-700 mt-3">
+                  Once discover mode is turned off, this information becomes invisible.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 6 -->
+          <div class="faq-item bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border-4 border-black p-6 shadow-md">
+            <div class="flex items-start gap-4">
+              <span class="text-4xl">🌍</span>
+              <div class="flex-1">
+                <h3 class="text-2xl font-bold text-black mb-3">6. On which platforms is NowUCme available?</h3>
+                <p class="text-gray-700 leading-relaxed mb-2">
+                  📲 <strong>iOS and Android</strong> versions are ready.
+                </p>
+                <p class="text-gray-700 leading-relaxed">
+                  The app will be available on the Google Play Store and Apple App Store after the public launch.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 7 -->
+          <div class="faq-item bg-white rounded-2xl border-4 border-black p-6 shadow-md">
+            <div class="flex items-start gap-4">
+              <span class="text-4xl">❗</span>
+              <div class="flex-1">
+                <h3 class="text-2xl font-bold text-black mb-3">7. Do I need internet and GPS to use the app?</h3>
+                <p class="text-gray-700 leading-relaxed">
+                  <strong>Yes.</strong> Internet and GPS permissions are required for real-time discovery and social profile exchange.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 8 -->
+          <div class="faq-item bg-white rounded-2xl border-4 border-black p-6 shadow-md">
+            <div class="flex items-start gap-4">
+              <span class="text-4xl">👥</span>
+              <div class="flex-1">
+                <h3 class="text-2xl font-bold text-black mb-3">8. Can I choose who can discover me?</h3>
+                <p class="text-gray-700 mb-3">Yes. You are only visible:</p>
+                <ul class="list-disc list-inside text-gray-700 space-y-2 ml-4">
+                  <li>When discover mode is turned ON</li>
+                  <li>To users who are also nearby and in discovery mode</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 9 -->
+          <div class="faq-item bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl border-4 border-black p-6 shadow-md">
+            <div class="flex items-start gap-4">
+              <span class="text-4xl">🧹</span>
+              <div class="flex-1">
+                <h3 class="text-2xl font-bold text-black mb-3">9. How is my data protected?</h3>
+                <ul class="list-disc list-inside text-gray-700 space-y-2 ml-4">
+                  <li>Passwords are encrypted (bcrypt)</li>
+                  <li>Database is secured</li>
+                  <li>HTTPS/SSL encryption is used</li>
+                  <li>Location data auto-deletes after 24 hours</li>
+                  <li>No data is sold or shared with third parties</li>
+                </ul>
+                <p class="text-gray-700 mt-3">
+                  (More details in the <a href="privacy-policy" class="text-[#84fe71] font-bold underline hover:text-[#6fe05f]">Privacy Policy</a>)
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 10 -->
+          <div class="faq-item bg-white rounded-2xl border-4 border-black p-6 shadow-md">
+            <div class="flex items-start gap-4">
+              <span class="text-4xl">🗑️</span>
+              <div class="flex-1">
+                <h3 class="text-2xl font-bold text-black mb-3">10. Can I delete my account and data?</h3>
+                <p class="text-gray-700 leading-relaxed">
+                  Yes. You can delete your account anytime from the app settings. All your data is permanently erased within 30 days.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 11 -->
+          <div class="faq-item bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-2xl border-4 border-black p-6 shadow-md">
+            <div class="flex items-start gap-4">
+              <span class="text-4xl">📩</span>
+              <div class="flex-1">
+                <h3 class="text-2xl font-bold text-black mb-3">11. How can I get early access or become a beta tester?</h3>
+                <p class="text-gray-700 mb-3">
+                  You can sign up for early access on our landing page or contact us directly:
+                </p>
+                <div class="bg-white rounded-xl p-4 border-2 border-black">
+                  <p class="text-gray-700">
+                    📧 <a href="mailto:faseenanvar@gmail.com" class="text-[#84fe71] font-bold underline">faseenanvar@gmail.com</a>
+                  </p>
+                  <p class="text-gray-700">
+                    📞 <a href="tel:+919778152306" class="text-[#84fe71] font-bold underline">+91 97781 52306</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 12 -->
+          <div class="faq-item bg-white rounded-2xl border-4 border-black p-6 shadow-md">
+            <div class="flex items-start gap-4">
+              <span class="text-4xl">🚀</span>
+              <div class="flex-1">
+                <h3 class="text-2xl font-bold text-black mb-3">12. Who built NowUCme?</h3>
+                <p class="text-gray-700 mb-3">NowUCme is built by:</p>
+                <ul class="space-y-2 text-gray-700 ml-4">
+                  <li><strong>Faseen Anvar</strong> – Developer & Co-Founder</li>
+                  <li><strong>Amal K L</strong> – Co-Founder</li>
+                </ul>
+                <p class="text-gray-700 mt-3">
+                  Both passionate about building networking solutions and enhancing real-world connections.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 13 -->
+          <div class="faq-item bg-gradient-to-br from-pink-50 to-pink-100 rounded-2xl border-4 border-black p-6 shadow-md">
+            <div class="flex items-start gap-4">
+              <span class="text-4xl">🤝</span>
+              <div class="flex-1">
+                <h3 class="text-2xl font-bold text-black mb-3">13. Can I collaborate, invest, or partner with NowUCme?</h3>
+                <p class="text-gray-700 leading-relaxed">
+                  Yes! We are open to collaborations, partnerships, and event integrations. Contact us at <a href="mailto:faseenanvar@gmail.com" class="text-[#84fe71] font-bold underline">faseenanvar@gmail.com</a> or via LinkedIn.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 14 -->
+          <div class="faq-item bg-white rounded-2xl border-4 border-black p-6 shadow-md">
+            <div class="flex items-start gap-4">
+              <span class="text-4xl">🆓</span>
+              <div class="flex-1">
+                <h3 class="text-2xl font-bold text-black mb-3">14. Is the app free to use?</h3>
+                <p class="text-gray-700 leading-relaxed">
+                  Yes, NowUCme will be free to download. Premium features may be introduced later, but the core discovery experience remains free.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ 15 -->
+          <div class="faq-item bg-gradient-to-br from-[#84fe71] to-[#22c55e] rounded-2xl border-4 border-black p-6 shadow-md">
+            <div class="flex items-start gap-4">
+              <span class="text-4xl">📍</span>
+              <div class="flex-1">
+                <h3 class="text-2xl font-bold text-black mb-3">15. Can I use NowUCme outside events?</h3>
+                <p class="text-black font-semibold leading-relaxed">
+                  Yes. You can enable discover mode whenever you want—at college, meetups, hackathons, coworking spaces, cafes, etc.
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Still Have Questions -->
+        <div class="mt-16 text-center">
+          <div class="bg-black text-white rounded-3xl border-4 border-black p-12 shadow-2xl">
+            <h2 class="text-3xl font-bold mb-4">Still have questions?</h2>
+            <p class="text-gray-300 mb-8">We're here to help! Get in touch with our team.</p>
+            <a
+              href="mailto:faseenanvar@gmail.com"
+              class="inline-block bg-[#84fe71] text-black px-8 py-4 rounded-full font-bold text-lg border-4 border-[#84fe71] hover:bg-[#6fe05f] transition"
+            >
+              Contact Us
+            </a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="flex items-center space-x-3 mb-4 md:mb-0">
+            <img 
+              src="https://res.cloudinary.com/dw7ng0yjj/image/upload/w_60,h_60,c_fit,q_auto,f_auto/v1765000000/logo2_t2rvky.png" 
+              alt="nowUCme Logo" 
+              class="w-10 h-10 rounded-full border-2 border-white object-cover"
+            />
+            <span class="text-2xl font-extrabold">nowUCme</span>
+          </div>
+          
+          <p class="text-gray-400 text-sm">© 2025 nowUCme. All rights reserved.</p>
+          
+          <div class="flex space-x-6 mt-4 md:mt-0">
+            <a href="index" class="text-gray-400 hover:text-[#84fe71] transition">Home</a>
+            <a href="faq" class="text-gray-400 hover:text-[#84fe71] transition">FAQ</a>
+            <a href="privacy-policy" class="text-gray-400 hover:text-[#84fe71] transition">Privacy</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

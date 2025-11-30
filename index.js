@@ -3,6 +3,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 import os from "os";
 import process from "process";
+import path from "path";
+import { fileURLToPath } from "url";
+
 import { pool, initializeDatabase } from "./conn.js";
 import authRoutes from "./Routes/authRoutes.js";
 import profileRoutes from "./Routes/profileRoutes.js";
@@ -15,33 +18,60 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-/*app.use(cors({
-  origin: "*",
-  credentials: true,
-}));*/
-app.use(cors({
-  origin:"*",
-  methods:["GET","POST","PUT","DELETE","OPTIONS"],
-  allowedHeaders:["Content-Type","Authorization"]
-}));
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
+// Resolve __dirname in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve static files (CSS, JS, images) from public
+app.use(express.static(path.join(__dirname, "public")));
+
+// API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/discover", discoverRoutes);
-app.use('/api/survey', surveyRoutes);
-setInterval(cleanupUnverifiedUsers, 24 * 60 * 60 * 1000);
-cleanupUnverifiedUsers();
+app.use("/api/survey", surveyRoutes);
 
+// HTML routes
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+app.get("/index", (req, res) => {
+  res.redirect("/");
+});
+
+app.get("/faq", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "faq.html"));
+});
+
+app.get("/privacy-policy", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "privacy-policy.html"));
+});
+
+app.get("/cookie-policy", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "cookie-policy.html"));
+});
+
+app.get("/terms-of-service", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "terms-of-service.html"));
+});
+
+// Health check route (unchanged)
 app.get("/health", async (req, res) => {
- /* if (req.query.passkey !== "imdev") {
+  if (req.query.passkey !== "imdev") {
     return res
       .status(401)
       .json({ success: false, message: "Permission Denied" });
-  }*/
-
+  }
   try {
     await pool.query("SELECT 1");
-
     const serverInfo = {
       hostname: os.hostname(),
       platform: os.platform(),
@@ -52,7 +82,6 @@ app.get("/health", async (req, res) => {
       totalMemoryMB: Math.round(os.totalmem() / 1024 / 1024),
       freeMemoryMB: Math.round(os.freemem() / 1024 / 1024),
     };
-
     const processInfo = {
       nodeVersion: process.version,
       pid: process.pid,
@@ -60,7 +89,6 @@ app.get("/health", async (req, res) => {
       uptime: `${Math.round(process.uptime())} secs`,
       environment: process.env.NODE_ENV || "development",
     };
-
     res.status(200).json({
       status: "OK",
       database: "Connected",
@@ -85,11 +113,12 @@ const PORT = process.env.PORT || 3000;
     await initializeDatabase();
     await initializeDatabaseModels();
 
-      //  NOW start cleanup (after pool is ready)
     cleanupUnverifiedUsers(); // Run once on startup
-    setInterval(cleanupUnverifiedUsers, 24 * 60 * 60 * 1000); 
+    setInterval(cleanupUnverifiedUsers, 24 * 60 * 60 * 1000);
 
-    app.listen(PORT, "0.0.0.0",() => console.log(`🚀 Server running on port ${PORT}`));
+    app.listen(PORT, "0.0.0.0", () =>
+      console.log(`🚀 Server running on port ${PORT}`)
+    );
   } catch (err) {
     console.error("❌ Failed to start server:", err.message);
     process.exit(1);
